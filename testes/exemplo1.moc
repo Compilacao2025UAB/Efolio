@@ -1,0 +1,20 @@
+int x = "erro";        // Erro semântico: atribuição de string a inteiro
+double y = 5;          // Correto
+
+void main(void) {
+    int vetor[3];
+    vetor[1.5] = 10;   // Erro semântico: índice não inteiro
+
+    if (x == y {       // Erro sintático: parêntese não fechado
+        x += 3;        // Erro léxico: operador '+=' não permitido
+    }
+
+    10 = x;            // Erro semântico: atribuição a literal
+
+    char c = @;        // Erro léxico: caractere inválido
+
+    funcao_nao_declarada(); // Erro semântico: função não declarada
+}
+
+// Erro semantico: função sem corpo
+void funcao_fantasma();

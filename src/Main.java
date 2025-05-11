@@ -24,9 +24,15 @@ public class Main {
                 // Fazer Parse
                 ParseTree tree = parser.program();
 
+                // Visitor Semantico
+                SemanticVisitor checker = new SemanticVisitor();
+
                 // Mostra a Arvore
                 System.out.println("\nParsed Tree:");
                 System.out.println(tree.toStringTree(parser));
+
+                // Visitor call
+                checker.visit(tree);
 
                 // Abre o GUI
                 Trees.inspect(tree, parser);

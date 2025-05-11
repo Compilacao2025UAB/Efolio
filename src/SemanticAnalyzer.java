@@ -88,6 +88,14 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
     }
 
     /**
+     * Adiciona um erro semântico com informação da linha.
+     */
+    private void addError(ParserRuleContext ctx, String message) {
+        int line = ctx.getStart().getLine();
+        errors.add("Linha " + line + ": " + message);
+    }
+
+    /**
      * Visita o programa principal.
      * Verifica todas as declarações e definições de funções.
      */
@@ -107,7 +115,7 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
         }
         // Verifica se existe função main
         if (!hasMainFunction) {
-            errors.add("Erro: Função 'main' não encontrada");
+            addError(ctx, "Erro: Função 'main' não encontrada");
         }
         return "void";
     }
@@ -124,7 +132,7 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
         // Verifica se é a função main
         if (funcName.equals("main")) {
             if (!returnType.equals("int")) {
-                errors.add("Erro: Função 'main' deve retornar 'int'");
+                addError(ctx, "Erro: Função 'main' deve retornar 'int'");
             }
             hasMainFunction = true;
         }
@@ -176,7 +184,7 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
         String returnType = ctx.funcType().getText();
         
         if (symbolTable.containsKey(funcName)) {
-            errors.add("Erro: Função '" + funcName + "' já declarada");
+            addError(ctx, "Erro: Função '" + funcName + "' já declarada");
             return returnType;
         }
         
@@ -207,7 +215,7 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
         boolean isArray = varInit.LEFTBRACKET() != null;
         
         if (symbolTable.containsKey(varName)) {
-            errors.add("Erro: Variável '" + varName + "' já declarada");
+            addError(ctx, "Erro: Variável '" + varName + "' já declarada");
             return varType;
         }
         
@@ -217,7 +225,7 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
         if (varInit.expression() != null) {
             String exprType = visit(varInit.expression());
             if (!exprType.equals(varType)) {
-                errors.add("Erro: Tipo incompatível na inicialização de '" + varName + "'");
+                addError(ctx, "Erro: Tipo incompatível na inicialização de '" + varName + "'");
             }
             varSymbol.isInitialized = true;
         }
@@ -240,7 +248,7 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
             Symbol varSymbol = symbolTable.get(varName);
             
             if (varSymbol == null) {
-                errors.add("Erro: Variável '" + varName + "' não declarada");
+                addError(ctx, "Erro: Variável '" + varName + "' não declarada");
                 return "void";
             }
             
@@ -254,12 +262,12 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
             Symbol funcSymbol = symbolTable.get(funcName);
             
             if (funcSymbol == null) {
-                errors.add("Erro: Função '" + funcName + "' não declarada");
+                addError(ctx, "Erro: Função '" + funcName + "' não declarada");
                 return "void";
             }
             
             if (!funcSymbol.isFunction) {
-                errors.add("Erro: '" + funcName + "' não é uma função");
+                addError(ctx, "Erro: '" + funcName + "' não é uma função");
                 return "void";
             }
             
@@ -269,13 +277,13 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
             }
             
             if (argTypes.size() != funcSymbol.paramTypes.size()) {
-                errors.add("Erro: Número incorreto de argumentos na chamada de '" + funcName + "'");
+                addError(ctx, "Erro: Número incorreto de argumentos na chamada de '" + funcName + "'");
                 return funcSymbol.type;
             }
             
             for (int i = 0; i < argTypes.size(); i++) {
                 if (!argTypes.get(i).equals(funcSymbol.paramTypes.get(i))) {
-                    errors.add("Erro: Tipo incompatível no argumento " + (i+1) + " da chamada de '" + funcName + "'");
+                    addError(ctx, "Erro: Tipo incompatível no argumento " + (i+1) + " da chamada de '" + funcName + "'");
                 }
             }
             
@@ -305,7 +313,7 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
         for (int i = 1; i < ctx.mulExpr().size(); i++) {
             String rightType = visit(ctx.mulExpr(i));
             if (!leftType.equals(rightType)) {
-                errors.add("Erro: Tipos incompatíveis na operação aritmética");
+                addError(ctx, "Erro: Tipos incompatíveis na operação aritmética");
                 return "void";
             }
         }
@@ -324,7 +332,7 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
         for (int i = 1; i < ctx.unaryExpr().size(); i++) {
             String rightType = visit(ctx.unaryExpr(i));
             if (!leftType.equals(rightType)) {
-                errors.add("Erro: Tipos incompatíveis na operação aritmética");
+                addError(ctx, "Erro: Tipos incompatíveis na operação aritmética");
                 return "void";
             }
         }
@@ -344,7 +352,7 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
         
         String operandType = visit(ctx.getChild(1));
         if (!operandType.equals("int") && !operandType.equals("double")) {
-            errors.add("Erro: Operador unário '-' requer tipo numérico");
+            addError(ctx, "Erro: Operador unário '-' requer tipo numérico");
             return "void";
         }
         
@@ -370,7 +378,7 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
     @Override
     public String visitReturnStatement(MOCParser.ReturnStatementContext ctx) {
         if (currentFunction == null) {
-            errors.add("Erro: 'return' fora de uma função");
+            addError(ctx, "Erro: 'return' fora de uma função");
             return "void";
         }
         
@@ -380,10 +388,10 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
         if (ctx.expression() != null) {
             String exprType = visit(ctx.expression());
             if (!exprType.equals(returnType)) {
-                errors.add("Erro: Tipo de retorno incompatível na função '" + currentFunction + "'");
+                addError(ctx, "Erro: Tipo de retorno incompatível na função '" + currentFunction + "'");
             }
         } else if (!returnType.equals("void")) {
-            errors.add("Erro: Função '" + currentFunction + "' deve retornar um valor");
+            addError(ctx, "Erro: Função '" + currentFunction + "' deve retornar um valor");
         }
         
         return returnType;
@@ -411,7 +419,7 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
         Symbol varSymbol = symbolTable.get(varName);
         
         if (varSymbol == null) {
-            errors.add("Erro: Variável '" + varName + "' não declarada");
+            addError(ctx, "Erro: Variável '" + varName + "' não declarada");
             return "void";
         }
         
@@ -428,7 +436,7 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
     public String visitConditional(MOCParser.ConditionalContext ctx) {
         String conditionType = visit(ctx.expression());
         if (!conditionType.equals("int")) {
-            errors.add("Erro: Condição deve ser do tipo 'int'");
+            addError(ctx, "Erro: Condição deve ser do tipo 'int'");
         }
         
         visit(ctx.getChild(4)); // Bloco then
@@ -448,7 +456,7 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
     public String visitLoop(MOCParser.LoopContext ctx) {
         String conditionType = visit(ctx.expression().get(0));
         if (!conditionType.equals("int")) {
-            errors.add("Erro: Condição do loop deve ser do tipo 'int'");
+            addError(ctx, "Erro: Condição do loop deve ser do tipo 'int'");
         }
         
         visit(ctx.getChild(4)); // Corpo do loop

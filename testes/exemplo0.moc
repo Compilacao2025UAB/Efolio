@@ -37,3 +37,15 @@ void processarTexto(int texto[]) {
     writes(""); // Nova linha
 }
 
+int main() {
+    int texto[6] = {72, 101, 108, 108, 111, 0}; // "Hello" em ASCII
+    int n = 5;
+    double valores[5] = {1.0, 2.0, 3.0, 4.0, 5.0};
+    int resultado = fact(n);
+    double media = avg(valores, n);
+    processarTexto(texto);
+    write(resultado);
+    write(media);
+    return 0;
+}
+

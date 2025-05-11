@@ -1,0 +1,12 @@
+# IntelliJ project files
+.idea/
+EfolioA.iml
+
+# ANTLR jar
+antlr-4.13.2-complete.jar
+
+# Build output
+out/
+
+# Test files
+testes/*.moc

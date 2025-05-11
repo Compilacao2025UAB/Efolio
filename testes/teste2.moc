@@ -1,0 +1,30 @@
+int soma(int a, int b) {
+    return a + b;
+}
+
+double media(int[] valores) {
+    int soma = 0;
+    int i = 0;
+    while (i < valores.length) {
+        soma = soma + valores[i];
+        i = i + 1;
+    }
+    return soma / valores.length;
+}
+
+int main() {
+    int x = 5;
+    int y = 10;
+    int[] numeros = {1, 2, 3, 4, 5};
+    
+    int resultado = soma(x, y);
+    double m = media(numeros);
+    
+    if (resultado > 10) {
+        write(resultado);
+    } else {
+        write(m);
+    }
+    
+    return 0;
+} 

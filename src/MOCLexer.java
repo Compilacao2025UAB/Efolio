@@ -3,14 +3,14 @@ import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.TokenStream;
-import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.misc.*;
+import org.antlr.v4.runtime.Vocabulary;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast", "CheckReturnValue", "this-escape"})
 public class MOCLexer extends Lexer {
-	static { RuntimeMetaData.checkVersion("4.13.2", RuntimeMetaData.VERSION); }
+	static { org.antlr.v4.runtime.RuntimeMetaData.checkVersion("4.13.2", org.antlr.v4.runtime.RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -68,7 +68,7 @@ public class MOCLexer extends Lexer {
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
-	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
+	public static final org.antlr.v4.runtime.Vocabulary VOCABULARY = new org.antlr.v4.runtime.VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
 	/**
 	 * @deprecated Use {@link #VOCABULARY} instead.
@@ -96,11 +96,9 @@ public class MOCLexer extends Lexer {
 	}
 
 	@Override
-
-	public Vocabulary getVocabulary() {
+	public org.antlr.v4.runtime.Vocabulary getVocabulary() {
 		return VOCABULARY;
 	}
-
 
 	public MOCLexer(CharStream input) {
 		super(input);

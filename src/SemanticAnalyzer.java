@@ -199,10 +199,12 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
      * Verifica se a variável já foi declarada e adiciona à tabela de símbolos.
      */
     @Override
-    public String visitVarDeclaration(MOCParser.VarDeclarationContext ctx) {
-        String varName = ctx.IDENTIFIER().getText();
-        String varType = ctx.funcType().getText();
-        boolean isArray = ctx.LEFTBRACKET() != null;
+    public String visitDeclaration(MOCParser.DeclarationContext ctx) {
+        MOCParser.VariableInitContext varInit = ctx.variableInit(0);
+        String varName = varInit.IDENTIFIER().getText();
+        MOCParser.VarTypeContext varTypeCtx = ctx.varType(0);
+        String varType = varTypeCtx.getText();
+        boolean isArray = varInit.LEFTBRACKET() != null;
         
         if (symbolTable.containsKey(varName)) {
             errors.add("Erro: Variável '" + varName + "' já declarada");
@@ -212,8 +214,8 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
         Symbol varSymbol = new Symbol(varName, varType, isArray, false);
         symbolTable.put(varName, varSymbol);
         
-        if (ctx.expression() != null) {
-            String exprType = visit(ctx.expression());
+        if (varInit.expression() != null) {
+            String exprType = visit(varInit.expression());
             if (!exprType.equals(varType)) {
                 errors.add("Erro: Tipo incompatível na inicialização de '" + varName + "'");
             }
@@ -224,27 +226,63 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
     }
 
     /**
-     * Visita uma atribuição.
-     * Verifica se a variável existe e se os tipos são compatíveis.
+     * Visita uma expressão primária.
+     * Verifica literais, identificadores e expressões entre parênteses.
      */
     @Override
-    public String visitAssignment(MOCParser.AssignmentContext ctx) {
-        String varName = ctx.assignable().getText();
-        Symbol varSymbol = symbolTable.get(varName);
-        
-        if (varSymbol == null) {
-            errors.add("Erro: Variável '" + varName + "' não declarada");
-            return "void";
+    public String visitPrimeExpr(MOCParser.PrimeExprContext ctx) {
+        if (ctx.INT_LITERAL() != null) {
+            return "int";
+        } else if (ctx.DOUBLE_LITERAL() != null) {
+            return "double";
+        } else if (ctx.IDENTIFIER() != null) {
+            String varName = ctx.IDENTIFIER().getText();
+            Symbol varSymbol = symbolTable.get(varName);
+            
+            if (varSymbol == null) {
+                errors.add("Erro: Variável '" + varName + "' não declarada");
+                return "void";
+            }
+            
+            varSymbol.isUsed = true;
+            return varSymbol.type;
+        } else if (ctx.expression() != null) {
+            return visit(ctx.expression());
+        } else if (ctx.expressionList() != null) {
+            // Chamada de função
+            String funcName = ctx.IDENTIFIER().getText();
+            Symbol funcSymbol = symbolTable.get(funcName);
+            
+            if (funcSymbol == null) {
+                errors.add("Erro: Função '" + funcName + "' não declarada");
+                return "void";
+            }
+            
+            if (!funcSymbol.isFunction) {
+                errors.add("Erro: '" + funcName + "' não é uma função");
+                return "void";
+            }
+            
+            List<String> argTypes = new ArrayList<>();
+            for (MOCParser.ExpressionContext expr : ctx.expressionList().expression()) {
+                argTypes.add(visit(expr));
+            }
+            
+            if (argTypes.size() != funcSymbol.paramTypes.size()) {
+                errors.add("Erro: Número incorreto de argumentos na chamada de '" + funcName + "'");
+                return funcSymbol.type;
+            }
+            
+            for (int i = 0; i < argTypes.size(); i++) {
+                if (!argTypes.get(i).equals(funcSymbol.paramTypes.get(i))) {
+                    errors.add("Erro: Tipo incompatível no argumento " + (i+1) + " da chamada de '" + funcName + "'");
+                }
+            }
+            
+            return funcSymbol.type;
         }
         
-        String exprType = visit(ctx.expression());
-        if (!exprType.equals(varSymbol.type)) {
-            errors.add("Erro: Tipo incompatível na atribuição de '" + varName + "'");
-        }
-        
-        varSymbol.isInitialized = true;
-        varSymbol.isUsed = true;
-        return varSymbol.type;
+        return "void";
     }
 
     /**
@@ -311,74 +349,6 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
         }
         
         return operandType;
-    }
-
-    /**
-     * Visita uma expressão primária.
-     * Verifica literais, identificadores e expressões entre parênteses.
-     */
-    @Override
-    public String visitPrimeExpr(MOCParser.PrimeExprContext ctx) {
-        if (ctx.INT_LITERAL() != null) {
-            return "int";
-        } else if (ctx.DOUBLE_LITERAL() != null) {
-            return "double";
-        } else if (ctx.IDENTIFIER() != null) {
-            String varName = ctx.IDENTIFIER().getText();
-            Symbol varSymbol = symbolTable.get(varName);
-            
-            if (varSymbol == null) {
-                errors.add("Erro: Variável '" + varName + "' não declarada");
-                return "void";
-            }
-            
-            varSymbol.isUsed = true;
-            return varSymbol.type;
-        } else if (ctx.expression() != null) {
-            return visit(ctx.expression());
-        }
-        
-        return "void";
-    }
-
-    /**
-     * Visita uma chamada de função.
-     * Verifica se a função existe e se os argumentos são do tipo correto.
-     */
-    @Override
-    public String visitFuncCall(MOCParser.FuncCallContext ctx) {
-        String funcName = ctx.IDENTIFIER().getText();
-        Symbol funcSymbol = symbolTable.get(funcName);
-        
-        if (funcSymbol == null) {
-            errors.add("Erro: Função '" + funcName + "' não declarada");
-            return "void";
-        }
-        
-        if (!funcSymbol.isFunction) {
-            errors.add("Erro: '" + funcName + "' não é uma função");
-            return "void";
-        }
-        
-        List<String> argTypes = new ArrayList<>();
-        if (ctx.expressionList() != null) {
-            for (MOCParser.ExpressionContext expr : ctx.expressionList().expression()) {
-                argTypes.add(visit(expr));
-            }
-        }
-        
-        if (argTypes.size() != funcSymbol.paramTypes.size()) {
-            errors.add("Erro: Número incorreto de argumentos na chamada de '" + funcName + "'");
-            return funcSymbol.type;
-        }
-        
-        for (int i = 0; i < argTypes.size(); i++) {
-            if (!argTypes.get(i).equals(funcSymbol.paramTypes.get(i))) {
-                errors.add("Erro: Tipo incompatível no argumento " + (i+1) + " da chamada de '" + funcName + "'");
-            }
-        }
-        
-        return funcSymbol.type;
     }
 
     /**

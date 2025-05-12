@@ -3,10 +3,8 @@ import org.antlr.v4.runtime.tree.*;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.ParserRuleContext;
 
-/**
- * Analisador Semântico para a linguagem MOC.
- * Responsável por verificar a correção semântica do código fonte.
- */
+ // Analisador Semântico  linguagem MOCC
+
 public class SemanticAnalyzer extends MOCBaseVisitor<String> {
     // Tabela de símbolos que mapeia nomes de variáveis/funções para seus símbolos
     private Map<String, Symbol> symbolTable;
@@ -36,19 +34,16 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
         enterScope(); // Inicia com o escopo global
     }
 
-    /**
-     * Inicializa o mapa de tipos válidos na linguagem.
-     */
+   // Define set de tipos validos, ambos para funcoes e para Variaveis
+   // Previno o uso de variaveis invalidas
+
     private void initializeTypeMap() {
         typeMap.put("int", "int");
         typeMap.put("double", "double");
         typeMap.put("void", "void");
     }
 
-    /**
-     * Classe interna que representa um símbolo na tabela de símbolos.
-     * Pode ser uma variável ou função.
-     */
+   // Represente variaveis ou funções declaradas no codigo, guardando informação semantica
     private static class Symbol {
         String name;        // Nome do símbolo
         String type;        // Tipo do símbolo
@@ -69,36 +64,26 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
         }
     }
 
-    /**
-     * Entra em um novo escopo.
-     * Cria uma nova tabela de símbolos para o escopo atual.
-     */
+    // Guarda a tabela de simbolos atual
     private void enterScope() {
         scopeStack.push(new HashMap<>(symbolTable));
     }
 
-    /**
-     * Sai do escopo atual.
-     * Remove a tabela de símbolos do escopo atual.
-     */
+
+    // Remove a tabela de símbolos do escopo atual
     private void exitScope() {
         if (!scopeStack.isEmpty()) {
             symbolTable = scopeStack.pop();
         }
     }
 
-    /**
-     * Adiciona um erro semântico com informação da linha.
-     */
+    // Gera informaçao sobre erro semantico
     private void addError(ParserRuleContext ctx, String message) {
         int line = ctx.getStart().getLine();
         errors.add("Linha " + line + ": " + message);
     }
 
-    /**
-     * Visita o programa principal.
-     * Verifica todas as declarações e definições de funções.
-     */
+    // Visita o programa atual, verifica se a funçao main existe
     @Override
     public String visitProgram(MOCParser.ProgramContext ctx) {
         // Visita todas as declarações de função
@@ -115,15 +100,12 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
         }
         // Verifica se existe função main
         if (!hasMainFunction) {
-            addError(ctx, "Erro: Função 'main' não encontrada");
+            addError(ctx, "Erro: Funcao 'main' nao encontrada");
         }
         return "void";
     }
 
-    /**
-     * Visita uma definição de função.
-     * Verifica o tipo de retorno, parâmetros e corpo da função.
-     */
+    // Verifica a definao de funcoes
     @Override
     public String visitFuncDefinition(MOCParser.FuncDefinitionContext ctx) {
         String funcName = ctx.IDENTIFIER().getText();
@@ -131,9 +113,10 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
         
         // Verifica se é a função main
         if (funcName.equals("main")) {
-            if (!returnType.equals("int")) {
-                addError(ctx, "Erro: Função 'main' deve retornar 'int'");
+            if (!returnType.equals("int") && !returnType.equals("double") && !returnType.equals("void")) {
+                addError(ctx, "Erro: Funcao 'main' deve retornar int, double ou void");
             }
+
             hasMainFunction = true;
         }
 
@@ -152,7 +135,7 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
         symbolTable.put(funcName, funcSymbol);
         enterScope();
         
-        // Adiciona parâmetros ao escopo
+        // Adiciona parâmetros a scope
         if (ctx.parameterList() != null) {
             for (MOCParser.ParameterContext param : ctx.parameterList().parameter()) {
                 String paramName = param.IDENTIFIER().getText();
@@ -174,17 +157,14 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
         return returnType;
     }
 
-    /**
-     * Visita uma declaração de função.
-     * Verifica se a função já foi declarada e adiciona à tabela de símbolos.
-     */
+    // Verifica se a função já foi declarada e adiciona à tabela de símbolos.
     @Override
     public String visitFuncDeclaration(MOCParser.FuncDeclarationContext ctx) {
         String funcName = ctx.IDENTIFIER().getText();
         String returnType = ctx.funcType().getText();
         
         if (symbolTable.containsKey(funcName)) {
-            addError(ctx, "Erro: Função '" + funcName + "' já declarada");
+            addError(ctx, "Erro: Funcao '" + funcName + "' ja foi declarada previamente");
             return returnType;
         }
         
@@ -202,123 +182,126 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
         return returnType;
     }
 
-    /**
-     * Visita uma declaração de variável.
-     * Verifica se a variável já foi declarada e adiciona à tabela de símbolos.
-     */
+
+     // Verifica se variaveis já foram declaradas e adiciona a tabela de simbolos
     @Override
     public String visitDeclaration(MOCParser.DeclarationContext ctx) {
-        MOCParser.VariableInitContext varInit = ctx.variableInit(0);
-        String varName = varInit.IDENTIFIER().getText();
         MOCParser.VarTypeContext varTypeCtx = ctx.varType(0);
         String varType = varTypeCtx.getText();
-        boolean isArray = varInit.LEFTBRACKET() != null;
-        
-        if (symbolTable.containsKey(varName)) {
-            addError(ctx, "Erro: Variável '" + varName + "' já declarada");
-            return varType;
-        }
-        
-        Symbol varSymbol = new Symbol(varName, varType, isArray, false);
-        symbolTable.put(varName, varSymbol);
-        
-        if (varInit.expression() != null) {
-            String exprType = visit(varInit.expression());
-            if (!exprType.equals(varType)) {
-                addError(ctx, "Erro: Tipo incompatível na inicialização de '" + varName + "'");
+
+        for (MOCParser.VariableInitContext varInit : ctx.variableInit()) {
+            String varName = varInit.IDENTIFIER().getText();
+            boolean isArray = varInit.LEFTBRACKET() != null;
+
+            if (symbolTable.containsKey(varName)) {
+                addError(ctx, "Erro: Variavel '" + varName + "' ja declarada");
+                continue;
             }
-            varSymbol.isInitialized = true;
+
+            Symbol varSymbol = new Symbol(varName, varType, isArray, false);
+            symbolTable.put(varName, varSymbol);
+
+            // Check initialization
+            if (varInit.expression() != null) {
+                String exprType = visit(varInit.expression());
+                if (!exprType.equals(varType)) {
+                    addError(ctx, "Erro: Tipo incompativel na inicializacao de '" + varName + "'");
+                } else {
+                    varSymbol.isInitialized = true;
+                }
+            }
         }
-        
+
         return varType;
     }
 
-    /**
-     * Visita uma expressão primária.
-     * Verifica literais, identificadores e expressões entre parênteses.
-     */
+
+    // Verifica literais, identificadores e expressões entre parênteses.
     @Override
     public String visitPrimeExpr(MOCParser.PrimeExprContext ctx) {
         if (ctx.INT_LITERAL() != null) {
             return "int";
         } else if (ctx.DOUBLE_LITERAL() != null) {
             return "double";
-        } else if (ctx.IDENTIFIER() != null) {
-            String varName = ctx.IDENTIFIER().getText();
-            Symbol varSymbol = symbolTable.get(varName);
-            
-            if (varSymbol == null) {
-                addError(ctx, "Erro: Variável '" + varName + "' não declarada");
-                return "void";
-            }
-            
-            varSymbol.isUsed = true;
-            return varSymbol.type;
-        } else if (ctx.expression() != null) {
-            return visit(ctx.expression());
-        } else if (ctx.expressionList() != null) {
+        } else if (ctx.expressionList() != null && ctx.IDENTIFIER() != null) {
             // Chamada de função
             String funcName = ctx.IDENTIFIER().getText();
             Symbol funcSymbol = symbolTable.get(funcName);
-            
+
             if (funcSymbol == null) {
-                addError(ctx, "Erro: Função '" + funcName + "' não declarada");
+                addError(ctx, "Erro: Funcao '" + funcName + "' nao declarada");
                 return "void";
             }
-            
+
             if (!funcSymbol.isFunction) {
-                addError(ctx, "Erro: '" + funcName + "' não é uma função");
+                addError(ctx, "Erro: '" + funcName + "' nao é uma funcao");
                 return "void";
             }
-            
+
             List<String> argTypes = new ArrayList<>();
             for (MOCParser.ExpressionContext expr : ctx.expressionList().expression()) {
                 argTypes.add(visit(expr));
             }
-            
+
             if (argTypes.size() != funcSymbol.paramTypes.size()) {
-                addError(ctx, "Erro: Número incorreto de argumentos na chamada de '" + funcName + "'");
+                addError(ctx, "Erro: Numero incorreto de argumentos na chamada de '" + funcName + "'");
                 return funcSymbol.type;
             }
-            
+
+            // permite conversao ??
+
             for (int i = 0; i < argTypes.size(); i++) {
-                if (!argTypes.get(i).equals(funcSymbol.paramTypes.get(i))) {
-                    addError(ctx, "Erro: Tipo incompatível no argumento " + (i+1) + " da chamada de '" + funcName + "'");
-                }
+                String expected = funcSymbol.paramTypes.get(i);
+                String actual = argTypes.get(i);
+                boolean isCompatible = actual.equals(expected) || (actual.equals("int") && expected.equals("double"));
+
+                if (!isCompatible)
+                    addError(ctx, "Erro: Tipo incompativel no argumento " + (i + 1) + " da chamada de '" + funcName + "'. Esperado '" + expected + "', encontrado '" + actual + "'");
             }
-            
+
             return funcSymbol.type;
+        } else if (ctx.IDENTIFIER() != null) {
+            String varName = ctx.IDENTIFIER().getText();
+            Symbol varSymbol = symbolTable.get(varName);
+
+            if (varSymbol == null) {
+                addError(ctx, "Erro: Variavel ou funcao '" + varName + "' nao declarada");
+                return "void";
+            }
+
+            varSymbol.isUsed = true;
+            return varSymbol.type;
+        } else if (ctx.expression() != null) {
+            return visit(ctx.expression());
         }
-        
+
         return "void";
     }
 
-    /**
-     * Visita uma expressão.
-     * Verifica a correção semântica da expressão.
-     */
+    // Verifica a correção semântica da expressão.
     @Override
     public String visitExpression(MOCParser.ExpressionContext ctx) {
         return visitChildren(ctx);
     }
 
-    /**
-     * Visita uma expressão de adição.
-     * Verifica se os operandos são do tipo correto.
-     */
+    // Verifica se os operandos são do tipo correto numa adiçao, permite a promocao em estilo c
     @Override
     public String visitAddExpr(MOCParser.AddExprContext ctx) {
-        String leftType = visit(ctx.mulExpr(0));
-        
+        String resultType = visit(ctx.mulExpr(0));
+
         for (int i = 1; i < ctx.mulExpr().size(); i++) {
             String rightType = visit(ctx.mulExpr(i));
-            if (!leftType.equals(rightType)) {
-                addError(ctx, "Erro: Tipos incompatíveis na operação aritmética");
+            // permite conversão
+            if (resultType.equals("int") && rightType.equals("double") ||
+                    resultType.equals("double") && rightType.equals("int")) {
+                resultType = "double";
+            } else if (!resultType.equals(rightType)) {
+                addError(ctx, "Erro: Tipos incompativeis na operaçao aritmetica");
                 return "void";
             }
         }
-        
-        return leftType;
+
+        return resultType;
     }
 
     /**

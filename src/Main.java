@@ -10,7 +10,7 @@ public class Main {
     public static void main(String[] args) {
         try {
             // Ler o arquivo de entrada
-            String inputFile = args.length > 0 ? args[0] : "testes/exemplo1.moc";
+            String inputFile = args.length > 0 ? args[0] : "testes/exemplo0.moc";
             CharStream input = CharStreams.fromFileName(inputFile);
             
             // Criar o lexer
@@ -24,7 +24,7 @@ public class Main {
             ParseTree tree = parser.program();
             
             // Mostrar a árvore sintática na GUI
-            JFrame frame = new JFrame("Árvore Sintática");
+            JFrame frame = new JFrame("arvore Sintática");
             frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             
             // Criar um painel com barra de rolagem

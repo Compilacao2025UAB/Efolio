@@ -10,3 +10,6 @@ out/
 
 # Test files
 testes/*.moc
+
+# Ignore compiled Java class files
+*.class

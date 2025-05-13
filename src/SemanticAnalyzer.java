@@ -19,10 +19,7 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
     // Mapa de tipos válidos na linguagem
     private Map<String, String> typeMap;
 
-    /**
-     * Construtor do analisador semântico.
-     * Inicializa todas as estruturas de dados necessárias.
-     */
+    // Initializa estrutura de dados
     public SemanticAnalyzer() {
         this.symbolTable = new HashMap<>();
         this.scopeStack = new Stack<>();
@@ -110,19 +107,18 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
     public String visitFuncDefinition(MOCParser.FuncDefinitionContext ctx) {
         String funcName = ctx.IDENTIFIER().getText();
         String returnType = ctx.funcType().getText();
-        
+
         // Verifica se é a função main
         if (funcName.equals("main")) {
             if (!returnType.equals("int") && !returnType.equals("double") && !returnType.equals("void")) {
                 addError(ctx, "Erro: Funcao 'main' deve retornar int, double ou void");
             }
-
             hasMainFunction = true;
         }
 
         currentFunction = funcName;
         Symbol funcSymbol = new Symbol(funcName, returnType, false, true);
-        
+
         // Adiciona parâmetros à lista de tipos
         if (ctx.parameterList() != null) {
             for (MOCParser.ParameterContext param : ctx.parameterList().parameter()) {
@@ -131,31 +127,62 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
                 funcSymbol.paramTypes.add(paramType + (isArray ? "[]" : ""));
             }
         }
-        
+
+        // Verifica se já foi declarado
+        Symbol existing = symbolTable.get(funcName);
+        if (existing != null) {
+            if (!existing.isFunction) {
+                addError(ctx, "Erro: '" + funcName + "' ja declarado como variavel");
+                return returnType;
+            }
+
+            if (existing.isInitialized) {
+                addError(ctx, "Erro: Funcao '" + funcName + "' ja foi definida");
+                return returnType;
+            }
+
+            if (!existing.type.equals(returnType)) {
+                addError(ctx, "Erro: Tipo de retorno incompativel com a declaracao da funcao '" + funcName + "'");
+            }
+
+            if (existing.paramTypes.size() != funcSymbol.paramTypes.size()) {
+                addError(ctx, "Erro: Numero de parametros incompatível com a declaração da funcao '" + funcName + "'");
+            } else {
+                for (int i = 0; i < funcSymbol.paramTypes.size(); i++) {
+                    if (!funcSymbol.paramTypes.get(i).equals(existing.paramTypes.get(i))) {
+                        addError(ctx, "Erro: Tipo do parametro " + (i + 1) + " incompativel com a declaracao da funcao '" + funcName + "'");
+                    }
+                }
+            }
+        }
+
+        // Agora é seguro adicionar a definição
         symbolTable.put(funcName, funcSymbol);
         enterScope();
-        
-        // Adiciona parâmetros a scope
+
+        // Adiciona parâmetros ao escopo local
         if (ctx.parameterList() != null) {
             for (MOCParser.ParameterContext param : ctx.parameterList().parameter()) {
                 String paramName = param.IDENTIFIER().getText();
                 String paramType = param.funcType().getText();
                 boolean isArray = param.LEFTBRACKET() != null;
-                
+
                 Symbol paramSymbol = new Symbol(paramName, paramType, isArray, false);
                 paramSymbol.isInitialized = true;
                 symbolTable.put(paramName, paramSymbol);
             }
         }
-        
-        // Visita o corpo da função
+
         visit(ctx.blockStatement());
-        
+
+        funcSymbol.isInitialized = true;
+
         exitScope();
         currentFunction = null;
-        
+
         return returnType;
     }
+
 
     // Verifica se a função já foi declarada e adiciona à tabela de símbolos.
     @Override
@@ -265,12 +292,18 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
             Symbol varSymbol = symbolTable.get(varName);
 
             if (varSymbol == null) {
-                addError(ctx, "Erro: Variavel ou funcao '" + varName + "' nao declarada");
+                addError(ctx, "Erro: Variavel '" + varName + "' nao declarada");
                 return "void";
             }
 
             varSymbol.isUsed = true;
+
+            if (!varSymbol.isFunction && !varSymbol.isInitialized) {
+                addError(ctx, "Erro: Variavel '" + varName + "' usada antes de ser inicializada");
+            }
+
             return varSymbol.type;
+
         } else if (ctx.expression() != null) {
             return visit(ctx.expression());
         }
@@ -304,48 +337,60 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
         return resultType;
     }
 
-    /**
-     * Visita uma expressão de multiplicação.
-     * Verifica se os operandos são do tipo correto.
-     */
+     // Multiplicação, suportando promoçao
     @Override
     public String visitMulExpr(MOCParser.MulExprContext ctx) {
-        String leftType = visit(ctx.unaryExpr(0));
-        
+        String resultType = visit(ctx.unaryExpr(0));
+
         for (int i = 1; i < ctx.unaryExpr().size(); i++) {
             String rightType = visit(ctx.unaryExpr(i));
-            if (!leftType.equals(rightType)) {
-                addError(ctx, "Erro: Tipos incompatíveis na operação aritmética");
+
+            if ((resultType.equals("int") && rightType.equals("double")) ||
+                    (resultType.equals("double") && rightType.equals("int"))) {
+                // promoçao
+                resultType = "double";
+            } else if (!resultType.equals(rightType)) {
+                addError(ctx, "Erro: Tipos incompativeis na operaçao aritmetica");
                 return "void";
             }
         }
-        
-        return leftType;
+
+        return resultType;
     }
 
-    /**
-     * Visita uma expressão unária.
-     * Verifica se o operando é do tipo correto.
-     */
+    // Visita expressoes primarias
     @Override
     public String visitUnaryExpr(MOCParser.UnaryExprContext ctx) {
+        // No unary operator — just castExpr or primeExpr
         if (ctx.getChildCount() == 1) {
             return visit(ctx.getChild(0));
         }
-        
+
+        String operator = ctx.getChild(0).getText();
         String operandType = visit(ctx.getChild(1));
-        if (!operandType.equals("int") && !operandType.equals("double")) {
-            addError(ctx, "Erro: Operador unário '-' requer tipo numérico");
-            return "void";
+
+        if (operator.equals("-")) {
+            if (!operandType.equals("int") && !operandType.equals("double")) {
+                addError(ctx, "Erro: Operador unario '-' requer tipo numerico");
+                return "void";
+            }
+            return operandType;
         }
-        
-        return operandType;
+
+        // NAO ELIMINAR para casos como !0 e !1, sendo 0 falso, supportado em C!
+        if (operator.equals("!")) {
+            if (!operandType.equals("int")) {
+                addError(ctx, "Erro: Operador unario '!' requer tipo 'int' (como booleano)");
+                return "void";
+            }
+            return "int";
+        }
+
+        // fallback
+        return "void";
     }
 
-    /**
-     * Visita um bloco de código.
-     * Gerencia o escopo do bloco.
-     */
+    // Visita blockstatements, cria scope de bloco
     @Override
     public String visitBlockStatement(MOCParser.BlockStatementContext ctx) {
         enterScope();
@@ -354,14 +399,12 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
         return result;
     }
 
-    /**
-     * Visita uma instrução de retorno.
-     * Verifica se o tipo de retorno é compatível com o tipo da função.
-     */
+    // Visita return functions
+    // NOTA, nao permite implicit de double -> int
     @Override
     public String visitReturnStatement(MOCParser.ReturnStatementContext ctx) {
         if (currentFunction == null) {
-            addError(ctx, "Erro: 'return' fora de uma função");
+            addError(ctx, "Erro: 'return' fora de uma funcao");
             return "void";
         }
         
@@ -371,94 +414,94 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
         if (ctx.expression() != null) {
             String exprType = visit(ctx.expression());
             if (!exprType.equals(returnType)) {
-                addError(ctx, "Erro: Tipo de retorno incompatível na função '" + currentFunction + "'");
+                addError(ctx, "Erro: Tipo de retorno incompativel na funcao '" + currentFunction + "'");
             }
         } else if (!returnType.equals("void")) {
-            addError(ctx, "Erro: Função '" + currentFunction + "' deve retornar um valor");
+            addError(ctx, "Erro: Funcao '" + currentFunction + "' deve retornar um valor");
         }
         
         return returnType;
     }
 
-    /**
-     * Visita uma instrução de escrita.
-     * Verifica se a expressão é válida.
-     */
+    // Visita write statements, nao permite writes vazios
     @Override
     public String visitWriteStatement(MOCParser.WriteStatementContext ctx) {
         if (ctx.expression() != null) {
-            visit(ctx.expression());
+            visit(ctx.expression()); // validate expression as before
+        } else if (ctx.STRING_LITERAL() == null) {
+            addError(ctx, "Erro: WRITES requer uma expressao ou string literal");
         }
         return "void";
     }
 
-    /**
-     * Visita uma instrução de leitura.
-     * Verifica se a variável existe e é do tipo correto.
-     */
+    // Visita read statements
     @Override
     public String visitReadStatement(MOCParser.ReadStatementContext ctx) {
         String varName = ctx.IDENTIFIER().getText();
         Symbol varSymbol = symbolTable.get(varName);
-        
+
         if (varSymbol == null) {
-            addError(ctx, "Erro: Variável '" + varName + "' não declarada");
+            addError(ctx, "Erro: Variavel '" + varName + "' nao declarada");
             return "void";
         }
-        
+
         varSymbol.isInitialized = true;
         varSymbol.isUsed = true;
         return "void";
     }
 
-    /**
-     * Visita uma instrução condicional.
-     * Verifica a condição e os blocos then/else.
-     */
+
+    // Visita uma instrução condicional. A estrutura é fixa igual a nossa gramatica
     @Override
     public String visitConditional(MOCParser.ConditionalContext ctx) {
         String conditionType = visit(ctx.expression());
+        // NAO ELIMIAR, Exemplos como int x = 5; if (x) Baseado em C
         if (!conditionType.equals("int")) {
-            addError(ctx, "Erro: Condição deve ser do tipo 'int'");
+            addError(ctx, "Erro: Condicao deve ser do tipo 'int'");
         }
-        
-        visit(ctx.getChild(4)); // Bloco then
-        
+        // Bloco then
+        visit(ctx.getChild(4));
+
+        // Bloco else
         if (ctx.getChildCount() > 6) {
-            visit(ctx.getChild(6)); // Bloco else
+            visit(ctx.getChild(6));
         }
         
         return "void";
     }
 
-    /**
-     * Visita uma instrução de loop.
-     * Verifica a condição e o corpo do loop.
-     */
+    // Verifica Loops
     @Override
     public String visitLoop(MOCParser.LoopContext ctx) {
-        String conditionType = visit(ctx.expression().get(0));
-        if (!conditionType.equals("int")) {
-            addError(ctx, "Erro: Condição do loop deve ser do tipo 'int'");
+        if (ctx.FOR() != null) {
+            // FOR: expression(1) is the condition
+            String conditionType = visit(ctx.expression(1));
+            if (!conditionType.equals("int")) {
+                addError(ctx, "Erro: Condiçao do loop FOR deve ser do tipo 'int'");
+            }
+
+            visit(ctx.blockStatement());
+        } else if (ctx.WHILE() != null) {
+            // WHILE: expression(0) is the condition
+            String conditionType = visit(ctx.expression(0));
+            if (!conditionType.equals("int")) {
+                addError(ctx, "Erro: Condiçao do loop WHILE deve ser do tipo 'int'");
+            }
+
+            visit(ctx.blockStatement());
         }
-        
-        visit(ctx.getChild(4)); // Corpo do loop
-        
+
         return "void";
     }
 
-    /**
-     * Verifica se existem erros semânticos.
-     * @return true se existirem erros, false caso contrário
-     */
+
+    //Verifica se existem erros semânticos.
+
     public boolean hasErrors() {
         return !errors.isEmpty();
     }
 
-    /**
-     * Retorna a lista de erros semânticos encontrados.
-     * @return Lista de mensagens de erro
-     */
+    // Retorna a lista de erros semanticos encontrados
     public List<String> getErrors() {
         return errors;
     }

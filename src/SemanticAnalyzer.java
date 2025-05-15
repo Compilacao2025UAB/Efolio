@@ -63,13 +63,20 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
 
     // Guarda a tabela de simbolos atual
     private void enterScope() {
-        scopeStack.push(new HashMap<>(symbolTable));
+        // Cria uma cópia completa da tabela de símbolos atual
+        Map<String, Symbol> newScope = new HashMap<>();
+        for (Map.Entry<String, Symbol> entry : symbolTable.entrySet()) {
+            newScope.put(entry.getKey(), entry.getValue());
+        }
+        scopeStack.push(symbolTable);  // Guarda a tabela atual
+        symbolTable = newScope;        // Usa a cópia como nova tabela
     }
 
 
     // Remove a tabela de símbolos do escopo atual
     private void exitScope() {
         if (!scopeStack.isEmpty()) {
+            // Restaura o escopo anterior
             symbolTable = scopeStack.pop();
         }
     }
@@ -208,11 +215,27 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
                 boolean isArr = p.LEFTBRACKET() != null;
                 Symbol psym = new Symbol(pname, ptype, isArr, false);
                 psym.isInitialized = true;
+                psym.isUsed = true;  // Parâmetros são considerados usados
                 symbolTable.put(pname, psym);
             }
         }
 
         visit(ctx.blockStatement());
+        
+        // Verifica se a função tem return quando necessário
+        if (!returnType.equals("void")) {
+            boolean hasReturn = false;
+            for (MOCParser.StatementContext stmt : ctx.blockStatement().statement()) {
+                if (stmt.returnStatement() != null) {
+                    hasReturn = true;
+                    break;
+                }
+            }
+            if (!hasReturn) {
+                addError(ctx, "Erro: Função '" + funcName + "' deve retornar um valor do tipo '" + returnType + "'");
+            }
+        }
+        
         existing.isInitialized = true;
         exitScope();
         currentFunction = null;
@@ -257,8 +280,10 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
              String varName = varInit.IDENTIFIER().getText();
              boolean isArray = varInit.LEFTBRACKET() != null;
 
-             if (symbolTable.containsKey(varName)) {
-                 addError(ctx, "Erro: Variavel '" + varName + "' ja declarada");
+             // Verifica se já existe uma variável com este nome no escopo atual
+             Symbol existingSymbol = symbolTable.get(varName);
+             if (existingSymbol != null && !existingSymbol.isFunction) {
+                 addError(ctx, "Erro: Variavel '" + varName + "' ja declarada no escopo atual");
                  continue;
              }
 
@@ -327,7 +352,15 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
                 List<String> argTypes = new ArrayList<>();
                 if (ctx.expressionList() != null) {
                     for (MOCParser.ExpressionContext expr : ctx.expressionList().expression()) {
-                        argTypes.add(visit(expr));
+                        String type = visit(expr);
+                        // Se o tipo for int e o símbolo for um array, adiciona []
+                        if (type.equals("int")) {
+                            Symbol argSymbol = symbolTable.get(expr.getText());
+                            if (argSymbol != null && argSymbol.isArray) {
+                                type = "int[]";
+                            }
+                        }
+                        argTypes.add(type);
                     }
                 }
 
@@ -397,6 +430,7 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
             } else {
                 // Variable access case
                 if (symbol.isFunction) {
+                    // Se for uma função, verifica se está sendo usada como variável
                     addError(ctx, "Erro: Funcao '" + identifier + "' usada como variavel");
                     return "void";
                 }
@@ -743,6 +777,40 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
         return "void";
     }
 
+    @Override
+    public String visitAssignment(MOCParser.AssignmentContext ctx) {
+        String targetName = ctx.assignable().IDENTIFIER().getText();
+        Symbol targetSymbol = symbolTable.get(targetName);
+
+        if (targetSymbol == null) {
+            addError(ctx, "Erro: Variavel '" + targetName + "' nao declarada");
+            return "void";
+        }
+
+        String exprType = visit(ctx.expression());
+
+        // Verifica se é uma atribuição a um elemento de array
+        if (ctx.assignable().LEFTBRACKET() != null) {
+            if (!targetSymbol.isArray) {
+                addError(ctx, "Erro: '" + targetName + "' nao é um array");
+                return "void";
+            }
+            // Remove [] do tipo do array para comparar com o tipo da expressão
+            String arrayElementType = targetSymbol.type.replace("[]", "");
+            if (!arrayElementType.equals(exprType)) {
+                addError(ctx, "Erro: Tipo incompativel na atribuicao. Esperado '" + arrayElementType + "', encontrado '" + exprType + "'");
+            }
+        } else {
+            // Atribuição a variável simples
+            if (!targetSymbol.type.equals(exprType)) {
+                addError(ctx, "Erro: Tipo incompativel na atribuicao. Esperado '" + targetSymbol.type + "', encontrado '" + exprType + "'");
+            }
+        }
+
+        targetSymbol.isInitialized = true;
+        targetSymbol.isUsed = true;
+        return "void";
+    }
 
     //Verifica se existem erros semânticos.
 

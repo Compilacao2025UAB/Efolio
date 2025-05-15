@@ -2,21 +2,21 @@ int soma(int a, int b) {
     return a + b;
 }
 
-double media(int[] valores) {
+double media(int valores[]) {
     int soma = 0;
     int i = 0;
-    while (i < valores.length) {
+    while (i < 10) {
         soma = soma + valores[i];
         i = i + 1;
     }
-    return soma / valores.length;
+    return (double)(soma / 2);
 }
 
 int main() {
     int x = 5;
     int y = 10;
-    int[] numeros = {1, 2, 3, 4, 5};
-    
+    int numeros[] = {1, 2, 3, 4, 5};
+
     int resultado = soma(x, y);
     double m = media(numeros);
     
@@ -27,4 +27,5 @@ int main() {
     }
     
     return 0;
-} 
+}
+

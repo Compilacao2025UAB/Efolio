@@ -19,7 +19,7 @@ int fact(int k) {
 /* Função para calcular a média de valores positivos */
 double avg(double v[], int tamanho) {
     int i;
-    double soma = 0;
+    double soma = 0.0;
     for (i = 0; i < tamanho; i = i + 1) {
         soma = soma + v[i];
     }
@@ -42,7 +42,7 @@ int main() {
     int n = 5;
     double valores[5] = {1.0, 2.0, 3.0, 4.0, 5.0};
     int resultado = fact(n);
-    double media = avg(valores, n);
+    double media = avg(valores[]);
     processarTexto(texto);
     write(resultado);
     write(media);

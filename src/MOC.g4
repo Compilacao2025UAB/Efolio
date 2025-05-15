@@ -161,7 +161,7 @@ assExpr
     ;
 
 orExpr
-    :andExpr (OR andExpr)*
+    : andExpr (OR andExpr)*
     ;
 
 andExpr
@@ -195,15 +195,22 @@ castExpr
 // Primary expression
 primeExpr
     : readFunc LEFTPARENTESIS RIGHTPARENTESIS
-    // A linha a baixo permite algo como v[0] = 1
     | IDENTIFIER LEFTBRACKET expression RIGHTBRACKET
     | IDENTIFIER LEFTPARENTESIS expressionList? RIGHTPARENTESIS
     | IDENTIFIER
-    | INT_LITERAL
-    | DOUBLE_LITERAL
+    | intLiteral
+    | doubleLiteral
     | LEFTPARENTESIS expression RIGHTPARENTESIS
-    // Array literal como expressao literal
     | LEFTBRACE expressionList RIGHTBRACE
+    ;
+
+// Literais com verificação de tipo
+intLiteral
+    : INT_LITERAL
+    ;
+
+doubleLiteral
+    : DOUBLE_LITERAL
     ;
 
 // Lista de expressoes separadas por virgula
@@ -251,10 +258,11 @@ funcType
 
 // Variable initialization
 declaration
-    : varType variableInit ( COMA variableInit | varType )* SEMICOLON;
+    : varType variableInit (COMA variableInit)* SEMICOLON
+    ;
 
 variableInit
-    : IDENTIFIER ( ASSIGN expression | varType )?
+    : IDENTIFIER (ASSIGN expression)?
     | IDENTIFIER LEFTBRACKET expression? RIGHTBRACKET (ASSIGN arrayLiteral)?
     ;
 
@@ -265,8 +273,8 @@ arrayLiteral
 
 // Tipos de variaveis
 varType
-    : INT ( LEFTBRACKET RIGHTBRACKET )?
-    | DOUBLE ( LEFTBRACKET RIGHTBRACKET )?
+    : INT (LEFTBRACKET RIGHTBRACKET)?
+    | DOUBLE (LEFTBRACKET RIGHTBRACKET)?
     ;
 
 // Para ambos Loops e condicionais usamos blockStatement em vez de statement visto que no enunciado nos foi declarado

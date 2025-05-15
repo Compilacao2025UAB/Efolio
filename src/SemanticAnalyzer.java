@@ -248,36 +248,55 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
 
 
      // Verifica se variaveis já foram declaradas e adiciona a tabela de simbolos
-    @Override
-    public String visitDeclaration(MOCParser.DeclarationContext ctx) {
-        MOCParser.VarTypeContext varTypeCtx = ctx.varType(0);
-        String varType = varTypeCtx.getText();
+     @Override
+     public String visitDeclaration(MOCParser.DeclarationContext ctx) {
+         MOCParser.VarTypeContext varTypeCtx = ctx.varType(0);
+         String varType = varTypeCtx.getText();
 
-        for (MOCParser.VariableInitContext varInit : ctx.variableInit()) {
-            String varName = varInit.IDENTIFIER().getText();
-            boolean isArray = varInit.LEFTBRACKET() != null;
+         for (MOCParser.VariableInitContext varInit : ctx.variableInit()) {
+             String varName = varInit.IDENTIFIER().getText();
+             boolean isArray = varInit.LEFTBRACKET() != null;
 
-            if (symbolTable.containsKey(varName)) {
-                addError(ctx, "Erro: Variavel '" + varName + "' ja declarada");
-                continue;
-            }
+             if (symbolTable.containsKey(varName)) {
+                 addError(ctx, "Erro: Variavel '" + varName + "' ja declarada");
+                 continue;
+             }
 
-            Symbol varSymbol = new Symbol(varName, varType, isArray, false);
-            symbolTable.put(varName, varSymbol);
+             Symbol varSymbol = new Symbol(varName, varType, isArray, false);
+             symbolTable.put(varName, varSymbol);
 
-            // Check initialization
-            if (varInit.expression() != null) {
-                String exprType = visit(varInit.expression());
-                if (!exprType.equals(varType)) {
-                    addError(ctx, "Erro: Tipo incompativel na inicializacao de '" + varName + "'");
-                } else {
-                    varSymbol.isInitialized = true;
-                }
-            }
-        }
+             if (isArray) {
+                 // Verificar inicialização explícita de array
+                 if (varInit.arrayLiteral() != null) {
+                     List<String> elementTypes = new ArrayList<>();
+                     for (MOCParser.ExpressionContext expr : varInit.arrayLiteral().expressionList().expression()) {
+                         elementTypes.add(visit(expr));
+                     }
+                     // Verificar consistência dos tipos
+                     for (String type : elementTypes) {
+                         if (!type.equals(varType)) {
+                             addError(ctx, "Erro: Elementos do array têm tipos inconsistentes");
+                         }
+                     }
+                     varSymbol.isInitialized = true;
+                 }
+             } else {
+                 // Verificar inicialização de variável simples
+                 if (varInit.expression() == null) {
+                     varSymbol.isInitialized = true; // Assume valor padrão
+                 } else {
+                     String exprType = visit(varInit.expression());
+                     if (!exprType.equals(varType)) {
+                         addError(ctx, "Erro: Tipo incompativel na inicializacao de '" + varName + "'");
+                     } else {
+                         varSymbol.isInitialized = true;
+                     }
+                 }
+             }
+         }
 
-        return varType;
-    }
+         return varType;
+     }
 
 
     @Override
@@ -467,6 +486,12 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
             }
         }
 
+        if (ctx.getChild(0).getText().equals("/")) {
+            if (ctx.unaryExpr(1).getText().equals("0")) {
+                addError(ctx, "Erro: Divisão por zero detectada, KAPUT");
+            }
+        }
+
         return resultType;
     }
 
@@ -538,28 +563,120 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
     // Visita write statements, nao permite writes vazios
     @Override
     public String visitWriteStatement(MOCParser.WriteStatementContext ctx) {
-        if (ctx.expression() != null) {
-            visit(ctx.expression()); // validate expression as before
-        } else if (ctx.STRING_LITERAL() == null) {
-            addError(ctx, "Erro: WRITES requer uma expressao ou string literal");
+        if (ctx.WRITE() != null) {
+            // Handle write() - for simple variables (int/double)
+            String exprType = visit(ctx.expression());
+            if (!exprType.equals("int") && !exprType.equals("double")) {
+                addError(ctx, "Erro: write() requer tipo 'int' ou 'double'");
+            }
         }
+        else if (ctx.WRITEC() != null) {
+            // Handle writec() - for character output (must be int representing ASCII)
+            String exprType = visit(ctx.expression());
+            if (!exprType.equals("int")) {
+                addError(ctx, "Erro: writec() requer tipo 'int' (ASCII code)");
+            }
+        }
+        else if (ctx.WRITEV() != null) {
+            // Handle writev() - for array output
+            String exprType = visit(ctx.expression());
+            Symbol symbol = symbolTable.get(ctx.expression().getText());
+
+            if (symbol == null || !symbol.isArray) {
+                addError(ctx, "Erro: writev() requer um array como argumento");
+            }
+        }
+        else if (ctx.WRITES() != null) {
+            // Handle writes() - for strings (either string literal or char array)
+            if (ctx.STRING_LITERAL() != null) {
+                // String literal case - always valid
+                return "void";
+            }
+            else if (ctx.expression() != null) {
+                // Array case - must be array of int (char)
+                String exprType = visit(ctx.expression());
+                Symbol symbol = symbolTable.get(ctx.expression().getText());
+
+                if (symbol == null || !symbol.isArray || !symbol.type.equals("int")) {
+                    addError(ctx, "Erro: writes() requer string literal ou array de 'int'");
+                }
+            }
+            else {
+                addError(ctx, "Erro: writes() requer argumento");
+            }
+        }
+
         return "void";
     }
+
 
     // Visita read statements
     @Override
     public String visitReadStatement(MOCParser.ReadStatementContext ctx) {
+        // Determina qual função de leitura está sendo usada
+        String readFunction;
+        if (ctx.READ() != null) {
+            readFunction = ctx.READ().getText(); // "read"
+        } else if (ctx.READC() != null) {
+            readFunction = ctx.READC().getText(); // "readc"
+        } else if (ctx.READS() != null) {
+            readFunction = ctx.READS().getText(); // "reads"
+        } else {
+            readFunction = "read"; // padrão (não deve acontecer)
+        }
+
         String varName = ctx.IDENTIFIER().getText();
         Symbol varSymbol = symbolTable.get(varName);
 
         if (varSymbol == null) {
-            addError(ctx, "Erro: Variavel '" + varName + "' nao declarada");
+            addError(ctx, "Erro: Variável '" + varName + "' não declarada");
             return "void";
+        }
+
+        // Mapeia função de leitura para o tipo esperado
+        String expectedType;
+        switch (readFunction) {
+            case "read":
+                expectedType = "int";
+                break;
+            case "readc":
+                expectedType = "int"; // ou "char" se sua linguagem suportar
+                break;
+            case "reads":
+                expectedType = "int"; // assumindo que retorna um inteiro (como tamanho)
+                break;
+            default:
+                expectedType = "void";
+                addError(ctx, "Erro: Função de leitura '" + readFunction + "' desconhecida");
+        }
+
+        // Verifica compatibilidade de tipos
+        if (!varSymbol.type.equals(expectedType)) {
+            addError(ctx, "Erro: Função '" + readFunction + "' retorna '" + expectedType +
+                    "', mas variável '" + varName + "' é do tipo '" + varSymbol.type + "'");
         }
 
         varSymbol.isInitialized = true;
         varSymbol.isUsed = true;
         return "void";
+    }
+
+    @Override
+    public String visitCastExpr(MOCParser.CastExprContext ctx) {
+        // Get the target type from varType (not funcType)
+        String targetType = ctx.varType().getText();
+
+        // Get the expression type from unaryExpr (not expression)
+        String exprType = visit(ctx.unaryExpr());
+
+        // Verificar conversões permitidas
+        if ((targetType.equals("int") && exprType.equals("double")) ||
+                (targetType.equals("double") && exprType.equals("int"))) {
+            return targetType;
+        } else {
+            addError(ctx, "Erro: Cast invalido de '" + exprType + "' para '" + targetType + "'");
+            return "void";
+        }
     }
 
 
@@ -571,6 +688,14 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
         if (!conditionType.equals("int")) {
             addError(ctx, "Erro: Condicao deve ser do tipo 'int'");
         }
+
+        if (!ctx.getChild(4).getText().startsWith("{")) {
+            addError(ctx, "Erro: Bloco do 'if' deve estar entre {}");
+        }
+        if (ctx.getChildCount() > 6 && !ctx.getChild(6).getText().startsWith("{")) {
+            addError(ctx, "Erro: Bloco do 'else' deve estar entre {}");
+        }
+
         // Bloco then
         visit(ctx.getChild(4));
 
@@ -582,24 +707,36 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
         return "void";
     }
 
-    // Verifica Loops
     @Override
     public String visitLoop(MOCParser.LoopContext ctx) {
         if (ctx.FOR() != null) {
-            // FOR: expression(1) is the condition
+            enterScope(); // Create new scope for potential loop variables
+
+            // First expression is initialization (e.g., i = 0)
+            if (ctx.expression(0) != null) {
+                visit(ctx.expression(0));
+            }
+
+            // Second expression is condition (must be int)
             String conditionType = visit(ctx.expression(1));
             if (!conditionType.equals("int")) {
-                addError(ctx, "Erro: Condiçao do loop FOR deve ser do tipo 'int'");
+                addError(ctx, "Erro: Condiçao de loop FOR deve ser do tipo 'int'");
+            }
+
+            // Third expression is increment (e.g., i++)
+            if (ctx.expression(2) != null) {
+                visit(ctx.expression(2));
             }
 
             visit(ctx.blockStatement());
-        } else if (ctx.WHILE() != null) {
-            // WHILE: expression(0) is the condition
+            exitScope(); // Exit the loop scope
+        }
+        else if (ctx.WHILE() != null) {
+            // WHILE loop - only condition check
             String conditionType = visit(ctx.expression(0));
             if (!conditionType.equals("int")) {
                 addError(ctx, "Erro: Condiçao do loop WHILE deve ser do tipo 'int'");
             }
-
             visit(ctx.blockStatement());
         }
 

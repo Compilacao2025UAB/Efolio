@@ -129,8 +129,11 @@ public class Main {
             // Obter o codigo gerado
             TACGenerator generator = tacVisitor.getGenerator();
             
-            // Imprimir o codigo gerado
-            System.out.println(generator.toString());
+            // Imprimir o codigo gerado em todos os formatos
+            System.out.println(generator.toStringSimples()); // Tabela TAC simples
+            System.out.println(generator.toStringOtimizado()); // Tabela TAC otimizado
+            System.out.println(generator.toStringLinhaPorLinha()); // TAC simples linha a linha
+            System.out.println(generator.toStringLinhaPorLinhaOtimizado()); // TAC otimizado linha a linha
             
         } catch (IOException e) {
             System.err.println("\n=== ERRO DE I/O ===");

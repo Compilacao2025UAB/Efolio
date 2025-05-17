@@ -292,6 +292,190 @@ public class TACGenerator {
         return sb.toString();
     }
 
+    /**
+     * Mostra apenas o TAC simples (original, sem otimização)
+     */
+    public String toStringSimples() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n=== CODIGO TAC SIMPLES ===\n");
+        sb.append("+----+------------+------------+------------+------------+\n");
+        sb.append("| #  | Operacao   | Resultado  | Arg1       | Arg2       |\n");
+        sb.append("+----+------------+------------+------------+------------+\n");
+        int i = 1;
+        for (TACInstruction inst : instructions) {
+            sb.append(String.format("| %-2d | %-10s | %-10s | %-10s | %-10s |\n",
+                i++,
+                inst.getOp(),
+                inst.getResult() != null ? inst.getResult() : "",
+                inst.getArg1() != null ? inst.getArg1() : "",
+                inst.getArg2() != null ? inst.getArg2() : ""));
+        }
+        sb.append("+----+------------+------------+------------+------------+\n");
+        return sb.toString();
+    }
+
+    /**
+     * Mostra apenas o TAC otimizado (com liveness analysis)
+     */
+    public String toStringOtimizado() {
+        StringBuilder sb = new StringBuilder();
+        // Código TAC Otimizado com liveness analysis
+        List<TACInstruction> originalInstructions = new ArrayList<>();
+        for (TACInstruction inst : instructions) {
+            originalInstructions.add(new TACInstruction(
+                inst.getOp(),
+                inst.getResult(),
+                inst.getArg1(),
+                inst.getArg2()
+            ));
+        }
+        List<TACInstruction> optimizedInstructions = new ArrayList<>();
+        Set<String> live = new HashSet<>();
+        for (int idx = originalInstructions.size() - 1; idx >= 0; idx--) {
+            TACInstruction inst = originalInstructions.get(idx);
+            String result = inst.getResult();
+            String arg1 = inst.getArg1();
+            String arg2 = inst.getArg2();
+            boolean isAssignment = inst.getOp() == TACInstruction.OpType.ASSIGN ||
+                                   inst.getOp() == TACInstruction.OpType.ADD ||
+                                   inst.getOp() == TACInstruction.OpType.SUB ||
+                                   inst.getOp() == TACInstruction.OpType.MUL ||
+                                   inst.getOp() == TACInstruction.OpType.DIV;
+            if (isAssignment && result != null && !live.contains(result)) {
+                continue;
+            }
+            if (result != null) live.remove(result);
+            if (arg1 != null && !isNumber(arg1)) live.add(arg1);
+            if (arg2 != null && !isNumber(arg2)) live.add(arg2);
+            optimizedInstructions.add(0, inst);
+        }
+        for (int j = 0; j < optimizedInstructions.size(); j++) {
+            TACInstruction inst = optimizedInstructions.get(j);
+            if (inst.getOp() == TACInstruction.OpType.ADD || 
+                inst.getOp() == TACInstruction.OpType.SUB ||
+                inst.getOp() == TACInstruction.OpType.MUL ||
+                inst.getOp() == TACInstruction.OpType.DIV) {
+                try {
+                    double arg1 = Double.parseDouble(inst.getArg1());
+                    double arg2 = Double.parseDouble(inst.getArg2());
+                    double result = 0;
+                    switch (inst.getOp()) {
+                        case ADD: result = arg1 + arg2; break;
+                        case SUB: result = arg1 - arg2; break;
+                        case MUL: result = arg1 * arg2; break;
+                        case DIV: result = arg1 / arg2; break;
+                        default: break;
+                    }
+                    optimizedInstructions.set(j, new TACInstruction(
+                        TACInstruction.OpType.ASSIGN,
+                        inst.getResult(),
+                        String.valueOf(result),
+                        null
+                    ));
+                } catch (NumberFormatException e) {
+                    // Não é uma expressão constante
+                }
+            }
+        }
+        sb.append("\n=== CODIGO TAC OTIMIZADO ===\n");
+        sb.append("+----+------------+------------+------------+------------+\n");
+        sb.append("| #  | Operacao   | Resultado  | Arg1       | Arg2       |\n");
+        sb.append("+----+------------+------------+------------+------------+\n");
+        int i = 1;
+        for (TACInstruction inst : optimizedInstructions) {
+            sb.append(String.format("| %-2d | %-10s | %-10s | %-10s | %-10s |\n",
+                i++,
+                inst.getOp(),
+                inst.getResult() != null ? inst.getResult() : "",
+                inst.getArg1() != null ? inst.getArg1() : "",
+                inst.getArg2() != null ? inst.getArg2() : ""));
+        }
+        sb.append("+----+------------+------------+------------+------------+\n");
+        return sb.toString();
+    }
+
+    /**
+     * Mostra o TAC simples (linha a linha, sem tabela)
+     */
+    public String toStringLinhaPorLinha() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n=== CODIGO TAC SIMPLES (LINHA A LINHA) ===\n");
+        for (TACInstruction inst : instructions) {
+            sb.append(inst.toString()).append("\n");
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Mostra o TAC otimizado (linha a linha, sem tabela)
+     */
+    public String toStringLinhaPorLinhaOtimizado() {
+        // Código TAC Otimizado com liveness analysis
+        List<TACInstruction> originalInstructions = new ArrayList<>();
+        for (TACInstruction inst : instructions) {
+            originalInstructions.add(new TACInstruction(
+                inst.getOp(),
+                inst.getResult(),
+                inst.getArg1(),
+                inst.getArg2()
+            ));
+        }
+        List<TACInstruction> optimizedInstructions = new ArrayList<>();
+        Set<String> live = new HashSet<>();
+        for (int idx = originalInstructions.size() - 1; idx >= 0; idx--) {
+            TACInstruction inst = originalInstructions.get(idx);
+            String result = inst.getResult();
+            String arg1 = inst.getArg1();
+            String arg2 = inst.getArg2();
+            boolean isAssignment = inst.getOp() == TACInstruction.OpType.ASSIGN ||
+                                   inst.getOp() == TACInstruction.OpType.ADD ||
+                                   inst.getOp() == TACInstruction.OpType.SUB ||
+                                   inst.getOp() == TACInstruction.OpType.MUL ||
+                                   inst.getOp() == TACInstruction.OpType.DIV;
+            if (isAssignment && result != null && !live.contains(result)) {
+                continue;
+            }
+            if (result != null) live.remove(result);
+            if (arg1 != null && !isNumber(arg1)) live.add(arg1);
+            if (arg2 != null && !isNumber(arg2)) live.add(arg2);
+            optimizedInstructions.add(0, inst);
+        }
+        for (int j = 0; j < optimizedInstructions.size(); j++) {
+            TACInstruction inst = optimizedInstructions.get(j);
+            if (inst.getOp() == TACInstruction.OpType.ADD || 
+                inst.getOp() == TACInstruction.OpType.SUB ||
+                inst.getOp() == TACInstruction.OpType.MUL ||
+                inst.getOp() == TACInstruction.OpType.DIV) {
+                try {
+                    double arg1 = Double.parseDouble(inst.getArg1());
+                    double arg2 = Double.parseDouble(inst.getArg2());
+                    double result = 0;
+                    switch (inst.getOp()) {
+                        case ADD: result = arg1 + arg2; break;
+                        case SUB: result = arg1 - arg2; break;
+                        case MUL: result = arg1 * arg2; break;
+                        case DIV: result = arg1 / arg2; break;
+                        default: break;
+                    }
+                    optimizedInstructions.set(j, new TACInstruction(
+                        TACInstruction.OpType.ASSIGN,
+                        inst.getResult(),
+                        String.valueOf(result),
+                        null
+                    ));
+                } catch (NumberFormatException e) {
+                    // Não é uma expressão constante
+                }
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n=== CODIGO TAC OTIMIZADO (LINHA A LINHA) ===\n");
+        for (TACInstruction inst : optimizedInstructions) {
+            sb.append(inst.toString()).append("\n");
+        }
+        return sb.toString();
+    }
+
     // Função auxiliar para verificar se uma string é um número
     private boolean isNumber(String s) {
         if (s == null) return false;

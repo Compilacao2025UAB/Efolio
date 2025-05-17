@@ -104,10 +104,23 @@ program
     : (funcDeclaration | funcDefinition | statement)* EOF
     ;
 
+// ADICIONADO
+// a local prototype/declaration (no body)
+localFuncDecl
+    : funcType IDENTIFIER LEFTPARENTESIS parameterList? RIGHTPARENTESIS SEMICOLON
+    ;
+
+// a local definition (with a block)
+localFuncDef
+    : funcType IDENTIFIER LEFTPARENTESIS parameterList? RIGHTPARENTESIS blockStatement
+    ;
+
 // Statements
 statement
     : readStatement
     | writeStatement
+    | localFuncDecl
+    | localFuncDef
     | assignment
     | declaration
     | loop
@@ -115,8 +128,15 @@ statement
     | returnStatement
     | blockStatement
     | expression SEMICOLON
+<<<<<<< HEAD
     // adiciona a chamada de funçoes
+=======
+
+>>>>>>> f4743e5459940b445c7a4d39e686bcb3aee1972a
     ;
+
+
+
 
 // Block statement permite a criaçao de blocos, { ( x= 4) }  por exemplo
 blockStatement

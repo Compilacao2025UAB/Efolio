@@ -1,3 +1,9 @@
 int main() {
     return 3.14;  // Erro: retorna double quando deveria retornar int
 } 
+
+
+int main(){
+
+    return 0;
+}

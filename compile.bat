@@ -46,7 +46,7 @@ if %errorlevel% neq 0 (
 )
 
 echo Compilando ficheiros restantes...
-javac -Xlint:unchecked -cp "%LIB_DIR%\antlr-4.13.2-complete.jar;%OUT_DIR%" -d "%OUT_DIR%" "%SRC_DIR%\Main.java" "%SRC_DIR%\SemanticAnalyzer.java" "%SRC_DIR%\MOCTACVisitor.java" "%SRC_DIR%\TACGenerator.java" "%SRC_DIR%\TACInstruction.java"
+javac -Xlint:unchecked -cp "%LIB_DIR%\antlr-4.13.2-complete.jar;%OUT_DIR%" -d "%OUT_DIR%" "%SRC_DIR%\Main.java" "%SRC_DIR%\SemanticAnalyzer.java" "%SRC_DIR%\MOCTACVisitor.java" "%SRC_DIR%\TACGenerator.java" "%SRC_DIR%\TACInstruction.java" "%SRC_DIR%\MOCSemanticVisitor.java"
 
 if %errorlevel% neq 0 (
     echo ERRO ao compilar ficheiros restantes.
@@ -61,7 +61,7 @@ echo Executando programa...
 echo.
 
 REM Run the program with teste1.moc
-java -cp "%OUT_DIR%;%LIB_DIR%\antlr-4.13.2-complete.jar" Main testes\casting.moc
+java -cp "%OUT_DIR%;%LIB_DIR%\antlr-4.13.2-complete.jar" Main testes\exemplo2_sucess.moc
 
 echo.
 pause

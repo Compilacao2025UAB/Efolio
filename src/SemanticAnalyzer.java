@@ -123,6 +123,11 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
         String returnType = ctx.funcType().getText();
         boolean hasBody = ctx.blockStatement() != null;  // declarations end in ';', defs have a block
 
+        // Marca se é uma função main
+        if (funcName.equals("main")) {
+            hasMainFunction = true;
+        }
+
         // ——— Prototype (declaration only) ———
         if (!hasBody) {
             Symbol existing = symbolTable.get(funcName);
@@ -214,13 +219,15 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
 
         if (ctx.parameterList() != null) {
             for (MOCParser.ParameterContext p : ctx.parameterList().parameter()) {
-                String pname = p.IDENTIFIER().getText();
-                String ptype = p.funcType().getText();
-                boolean isArr = p.LEFTBRACKET() != null;
-                Symbol psym = new Symbol(pname, ptype, isArr, false);
-                psym.isInitialized = true;
-                psym.isUsed = true;  // Parâmetros são considerados usados
-                symbolTable.put(pname, psym);
+                if (p.IDENTIFIER() != null) {  // Verifica se o parâmetro tem um identificador
+                    String pname = p.IDENTIFIER().getText();
+                    String ptype = p.funcType().getText();
+                    boolean isArr = p.LEFTBRACKET() != null;
+                    Symbol psym = new Symbol(pname, ptype, isArr, false);
+                    psym.isInitialized = true;
+                    psym.isUsed = true;  // Parâmetros são considerados usados
+                    symbolTable.put(pname, psym);
+                }
             }
         }
 
@@ -253,6 +260,14 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
     public String visitFuncDeclaration(MOCParser.FuncDeclarationContext ctx) {
         String funcName = ctx.IDENTIFIER().getText();
         String returnType = ctx.funcType().getText();
+
+        // Verifica se é uma função main
+        if (funcName.equals("main")) {
+            if (hasMainFunction) {
+                addError(ctx, "Erro: Função 'main' já foi declarada anteriormente");
+            }
+            hasMainFunction = true;
+        }
 
         if (symbolTable.containsKey(funcName)) {
             addError(ctx, "Erro: Funcao '" + funcName + "' ja foi declarada previamente");
@@ -513,6 +528,7 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
 
         for (int i = 1; i < ctx.unaryExpr().size(); i++) {
             String rightType = visit(ctx.unaryExpr(i));
+            System.out.println("DEBUG: Multiplicação entre " + resultType + " e " + rightType);
 
             if ((resultType.equals("int") && rightType.equals("double")) ||
                     (resultType.equals("double") && rightType.equals("int"))) {
@@ -528,6 +544,11 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
             if (ctx.unaryExpr(1).getText().equals("0")) {
                 addError(ctx, "Erro: Divisão por zero detectada, KAPUT");
             }
+        }
+
+        // Garante que a multiplicação de inteiros retorna inteiro
+        if (resultType.equals("int")) {
+            return "int";
         }
 
         return resultType;
@@ -588,8 +609,14 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
 
         if (ctx.expression() != null) {
             String exprType = visit(ctx.expression());
+            System.out.println("DEBUG: Tipo de retorno da expressão: " + exprType + " (esperado: " + returnType + ")");
+            // Verifica se o tipo da expressão é compatível com o tipo de retorno da função
             if (!exprType.equals(returnType)) {
-                addError(ctx, "Erro: Tipo de retorno incompativel na funcao '" + currentFunction + "'");
+                // Permite conversão implícita de int para double
+                if (!(exprType.equals("int") && returnType.equals("double"))) {
+                    addError(ctx, "Erro: Tipo de retorno incompativel na funcao '" + currentFunction + 
+                            "'. Esperado '" + returnType + "', encontrado '" + exprType + "'");
+                }
             }
         } else if (!returnType.equals("void")) {
             addError(ctx, "Erro: Funcao '" + currentFunction + "' deve retornar um valor");

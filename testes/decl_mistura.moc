@@ -1,4 +1,4 @@
-// Teste: mistura de formas de declaração e inicialização de vetor.
+// Teste: mistura de formas de declaracao e inicializacao de vetor.
 int main() {
     int a, b = read(), c = 2 * b, v[] = {1, 2.5, 3};
     write(a);      // Espera-se: 0

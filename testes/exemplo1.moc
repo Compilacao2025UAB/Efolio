@@ -1,20 +1,20 @@
-int x = "erro";        // Erro semântico: atribuição de string a inteiro
+int x = "erro";        // Erro semântico: atribuicao de string a inteiro
 double y = 5;          // Correto
 
 void main(void) {
     int vetor[3];
-    vetor[1.5] = 10;   // Erro semântico: índice não inteiro
+    vetor[1.5] = 10;   // Erro semântico: índice nao inteiro
 
-    if (x == y) {       // Erro sintático: parêntese não fechado
-        x = x + 3;        // Erro léxico: operador '+=' não permitido
+    if (x == y) {       // Erro sintático: parêntese nao fechado
+        x = x + 3;        // Erro léxico: operador '+=' nao permitido
     }
 
-    10 = x;            // Erro semântico: atribuição a literal
+    10 = x;            // Erro semântico: atribuicao a literal
 
     char c = @;        // Erro léxico: caractere inválido
 
-    funcao_nao_declarada(); // Erro semântico: função não declarada
+    funcao_nao_declarada(); // Erro semântico: funcao nao declarada
 }
 
-// Erro semantico: função sem corpo
+// Erro semantico: funcao sem corpo
 void funcao_fantasma();

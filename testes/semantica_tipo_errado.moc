@@ -1,5 +1,5 @@
 int main() {
     int a;
-    a = 3.14; // atribuição de double a int
+    a = 3.14; // atribuicao de double a int
     return 0;
 } 

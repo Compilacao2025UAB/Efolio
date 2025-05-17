@@ -1,5 +1,5 @@
-// Teste: erro semântico - uso de variável não declarada.
+// Teste: erro semântico - uso de variável nao declarada.
 int main() {
-    a = 5; // Deve dar erro: 'a' não declarada e dá
+    a = 5; // Deve dar erro: 'a' nao declarada e dá
     return 0;
 } 

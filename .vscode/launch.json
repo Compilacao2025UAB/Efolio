@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "d:/_UAb/Ano_3/2Sem/21018 - Compilação/2104775_EfolioB/Efolio",
-      "program": "d:/_UAb/Ano_3/2Sem/21018 - Compilação/2104775_EfolioB/Efolio/build/Debug/outDebug",
+      "cwd": "d:/_UAb/Ano_3/2Sem/21018 - Compilacao/2104775_EfolioB/Efolio",
+      "program": "d:/_UAb/Ano_3/2Sem/21018 - Compilacao/2104775_EfolioB/Efolio/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

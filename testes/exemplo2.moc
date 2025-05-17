@@ -1,4 +1,4 @@
-/* exemplo 1 fatorial versão recursiva*/
+/* exemplo 1 fatorial versao recursiva*/
 int fact(int);
 
 int fact (int k) {

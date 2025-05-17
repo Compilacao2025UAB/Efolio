@@ -25,7 +25,7 @@ public class MOCTACVisitor extends MOCBaseVisitor<String> {
                 // Adiciona a variável à tabela de símbolos
                 generator.addSymbol(entry.getKey(), type);
                 
-                // Se a variável tem um valor inicial, adiciona uma instrução de atribuição
+                // Se a variável tem um valor inicial, adiciona uma instrucao de atribuicao
                 if (symbol.value != null) {
                     generator.addInstruction(new TACInstruction(
                         TACInstruction.OpType.ASSIGN,
@@ -309,7 +309,7 @@ public class MOCTACVisitor extends MOCBaseVisitor<String> {
                     null
                 ));
             } else {
-                System.err.println("Erro: write() sem expressão.");
+                System.err.println("Erro: write() sem expressao.");
             }
         } else if (ctx.WRITEC() != null) {
             if (ctx.expression() != null) {
@@ -321,7 +321,7 @@ public class MOCTACVisitor extends MOCBaseVisitor<String> {
                     null
                 ));
             } else {
-                System.err.println("Erro: writec() sem expressão.");
+                System.err.println("Erro: writec() sem expressao.");
             }
         } else if (ctx.WRITES() != null) {
             if (ctx.expression() != null) {
@@ -341,7 +341,7 @@ public class MOCTACVisitor extends MOCBaseVisitor<String> {
                     null
                 ));
             } else {
-                System.err.println("Erro: writes() sem expressão ou string literal.");
+                System.err.println("Erro: writes() sem expressao ou string literal.");
             }
         } else if (ctx.WRITEV() != null) {
             if (ctx.expression() != null) {
@@ -353,7 +353,7 @@ public class MOCTACVisitor extends MOCBaseVisitor<String> {
                     null
                 ));
             } else {
-                System.err.println("Erro: writev() sem expressão.");
+                System.err.println("Erro: writev() sem expressao.");
             }
         }
         return null;

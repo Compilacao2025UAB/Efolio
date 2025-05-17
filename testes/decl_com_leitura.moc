@@ -1,9 +1,9 @@
-// Teste: declaração com leitura do utilizador.
+// Teste: declaracao com leitura do utilizador.
 int main() {
     int m = read();    // Introduzir um inteiro
     double n = read(); // Introduzir um double
     int c = readc();   // Introduzir um carácter
-    int s[] = reads(); // Introduzir uma string // erro causado por ser interpreta como a definição de uma função
+    int s[] = reads(); // Introduzir uma string // erro causado por ser interpreta como a definicao de uma funcao
     write(m);   // Deve escrever o inteiro lido
     write(n);   // Deve escrever o double lido
     writec(c);  // Deve escrever o carácter lido

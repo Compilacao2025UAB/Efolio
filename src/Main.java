@@ -18,7 +18,7 @@ import java.util.Map;
 public class Main {
     @SuppressWarnings("unused")
     public static void main(String[] args) {
-        // Configurar codificação UTF-8 para o output
+        // Configurar codificacao UTF-8 para o output
         System.setProperty("file.encoding", "UTF-8");
         
         if (args.length == 0) {
@@ -29,7 +29,7 @@ public class Main {
 
         // Verificar se o ficheiro existe
         if (!Files.exists(Paths.get(args[0]))) {
-            System.err.println("Erro: Ficheiro de entrada não existe.");
+            System.err.println("Erro: Ficheiro de entrada nao existe.");
             return;
         }
         // Verificar se o ficheiro está vazio
@@ -61,17 +61,17 @@ public class Main {
             if (parser.getNumberOfSyntaxErrors() > 0) {
                 System.err.println("\n=== ERROS DE SINTAXE ===");
                 System.err.println("Foram encontrados " + parser.getNumberOfSyntaxErrors() + " erros de sintaxe.");
-                System.err.println("Compilação abortada.");
+                System.err.println("Compilacao abortada.");
                 return;
             }
             
             // Verificar se a árvore é nula
             if (tree == null) {
-                System.err.println("Erro: Não foi possível gerar a árvore sintática (ParseTree). Verifique a gramática e o ficheiro de entrada.");
+                System.err.println("Erro: Nao foi possível gerar a árvore sintática (ParseTree). Verifique a gramática e o ficheiro de entrada.");
                 return;
             }
             
-            // Visualização gráfica da AST do ANTLR
+            // Visualizacao gráfica da AST do ANTLR
             JFrame frame = new JFrame("AST - ANTLR");
             TreeViewer viewer = new TreeViewer(Arrays.asList(parser.getRuleNames()), tree);
             viewer.setScale(1.5); // aumenta o zoom se necessário
@@ -95,7 +95,7 @@ public class Main {
                 for (String error : semanticAnalyzer.getErrors()) {
                     System.err.println(error);
                 }
-                System.err.println("\nCompilação abortada.");
+                System.err.println("\nCompilacao abortada.");
                 return;
             }
             
@@ -130,10 +130,7 @@ public class Main {
             TACGenerator generator = tacVisitor.getGenerator();
             
             // Imprimir o codigo gerado
-            System.out.println("\n=== CoDIGO TAC GERADO ===");
-            for (TACInstruction instruction : generator.getInstructions()) {
-                System.out.println(instruction);
-            }
+            System.out.println(generator.toString());
             
         } catch (IOException e) {
             System.err.println("\n=== ERRO DE I/O ===");

@@ -1,4 +1,4 @@
-/* exemplo 2 de sucesso fatorial versão recursiva*/
+/* exemplo 2 de sucesso fatorial versao recursiva*/
 
 int fact(int);
 void main(void);
@@ -6,7 +6,7 @@ void main(void);
 
 int fact (int k) {
 if (k<=1) { return 1; }
-else {return k * fact (k-1); } // Compilador não reconhece o resultado da operação como 'int'
+else {return k * fact (k-1); } // Compilador nao reconhece o resultado da operacao como 'int'
 }
 
 

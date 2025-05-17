@@ -18,7 +18,7 @@ RIGHTBRACKET    : ']';
 LEFTPARENTESIS  : '(';
 RIGHTPARENTESIS : ')';
 
-// Atribuiçao
+// Atribuicao
 ASSIGN          : '=';
 
 // Comentarios (Retirados da Gramatica de C)
@@ -52,20 +52,20 @@ NOTEQUAL    :'!=';
 INT :'int';
 DOUBLE : 'double';
 
-// Funçoes
+// Funcoes
 VOID : 'void';
 RETURN : 'return';
 
 // Literais (Definem o que e uma uma variavel)
 DOUBLE_LITERAL : [0-9]+ DOT [0-9]+ | DOT [0-9]+ ;
 
-// Para int escolhemos não permitir numeros começados por 0 alem de 0 em si
+// Para int escolhemos nao permitir numeros comecados por 0 alem de 0 em si
 INT_LITERAL    : '0' | [1-9][0-9]*;
 
 // String literal atualizado para aceitar caracteres especiais
 STRING_LITERAL : '"' (STR_ESCAPE | ~["\\\r\n])* '"' ;
 
-// Permite a inserçao de caracteres especiais dentro de um string literal
+// Permite a insercao de caracteres especiais dentro de um string literal
 fragment STR_ESCAPE
     : '\\' [btnrf"\\]
     ;
@@ -93,7 +93,7 @@ READS           :'reads';
 IDENTIFIER   : [a-zA-Z\u00C0-\u00FF_][a-zA-Z0-9\u00C0-\u00FF_]*;
 DIGIT        : [0-9]+ ;
 
-// Espaços em branco
+// Espacos em branco
 SPACE   : [ \t\r\n]+ -> skip;
 
 
@@ -130,7 +130,7 @@ statement
     | expression SEMICOLON
     ;
 
-// Block statement permite a criaçao de blocos, { ( x= 4) }  por exemplo
+// Block statement permite a criacao de blocos, { ( x= 4) }  por exemplo
 blockStatement
     : LEFTBRACE statement* RIGHTBRACE
     ;
@@ -152,7 +152,7 @@ writeStatement
     | WRITES LEFTPARENTESIS (expression | STRING_LITERAL) RIGHTPARENTESIS SEMICOLON
     ;
 
-// Assignement permite a criaçao de assignments a variaveis ja existentes. Por exemplo, (x =4) permitindo mudar o valor da variavel
+// Assignement permite a criacao de assignments a variaveis ja existentes. Por exemplo, (x =4) permitindo mudar o valor da variavel
 assignment
     : assignable ASSIGN expression SEMICOLON
     ;
@@ -168,7 +168,7 @@ expression
     : assExpr
     ;
 
-// permite a criaçao de assigment expressions
+// permite a criacao de assigment expressions
 assExpr
     : IDENTIFIER ASSIGN assExpr
     | orExpr
@@ -218,7 +218,7 @@ primeExpr
     | LEFTBRACE expressionList RIGHTBRACE
     ;
 
-// Literais com verificação de tipo
+// Literais com verificacao de tipo
 intLiteral
     : INT_LITERAL
     ;
@@ -234,29 +234,29 @@ expressionList
 
 // Funtions
 
-// Permite a criaçao de declaraçoes de prototipos de funçoes int add(int,int);
+// Permite a criacao de declaracoes de prototipos de funcoes int add(int,int);
 funcDeclaration
     : funcType IDENTIFIER LEFTPARENTESIS parameterList? RIGHTPARENTESIS SEMICOLON
     ;
 
-// Permite defenir funçoes.
+// Permite defenir funcoes.
 funcDefinition
     : funcType IDENTIFIER LEFTPARENTESIS parameterList? RIGHTPARENTESIS blockStatement
     ;
 
-// Readfunction, permite a criaçao de n = read() por exemplo
+// Readfunction, permite a criacao de n = read() por exemplo
 readFunc
     : READ
     | READC
     | READS
     ;
 
-// Permite a inserçao de mais que um parametro numa funçao
+// Permite a insercao de mais que um parametro numa funcao
 parameterList
     : parameter (COMA parameter)*
     ;
 
-// permite a criaçao de um parametro, para ser inserido numa funçao
+// permite a criacao de um parametro, para ser inserido numa funcao
 parameter
     // Permite arrays como parametros
     : funcType IDENTIFIER LEFTBRACKET RIGHTBRACKET
@@ -264,7 +264,7 @@ parameter
     | funcType IDENTIFIER?
     ;
 
-// Tipo de funçoes, para nao rescrever int e double, usou se a lista de variaveis ja presente
+// Tipo de funcoes, para nao rescrever int e double, usou se a lista de variaveis ja presente
 funcType
     : VOID
     | varType

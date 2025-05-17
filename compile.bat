@@ -45,7 +45,7 @@ if %errorlevel% neq 0 (
     exit /b %errorlevel%
 )
 
-echo Compilando ficheiros restantes...
+echo Compilando ficheiros restantes...default
 javac -Xlint:unchecked -cp "%LIB_DIR%\antlr-4.13.2-complete.jar;%OUT_DIR%" -d "%OUT_DIR%" "%SRC_DIR%\Main.java" "%SRC_DIR%\SemanticAnalyzer.java" "%SRC_DIR%\MOCTACVisitor.java" "%SRC_DIR%\TACGenerator.java" "%SRC_DIR%\TACInstruction.java" "%SRC_DIR%\MOCSemanticVisitor.java"
 
 if %errorlevel% neq 0 (
@@ -61,7 +61,7 @@ echo Executando programa...
 echo.
 
 REM Run the program with teste1.moc
-java -Dfile.encoding=UTF-8 -cp "%OUT_DIR%;%LIB_DIR%\antlr-4.13.2-complete.jar" Main testes\exemplo2.moc
+java -Dfile.encoding=UTF-8 -cp "%OUT_DIR%;%LIB_DIR%\antlr-4.13.2-complete.jar" Main testes\codigo_morto.moc
 
 echo.
 pause

@@ -46,7 +46,7 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
         typeMap.put("string", "int[]");  // string e tratada como array de int
     }
 
-   // Represente variaveis ou funçoes declaradas no codigo, guardando informaçao semantica
+   // Represente variaveis ou funcoes declaradas no codigo, guardando informacao semantica
     public static class Symbol {
         @SuppressWarnings("unused")
         String name;        // Nome do simbolo
@@ -73,13 +73,13 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
 
     // Guarda a tabela de simbolos atual
     private void enterScope() {
-        // Cria uma cópia completa da tabela de simbolos atual
+        // Cria uma copia completa da tabela de simbolos atual
         Map<String, Symbol> newScope = new HashMap<>();
         for (Map.Entry<String, Symbol> entry : symbolTable.entrySet()) {
             newScope.put(entry.getKey(), entry.getValue());
         }
         scopeStack.push(symbolTable);  // Guarda a tabela atual
-        symbolTable = newScope;        // Usa a cópia como nova tabela
+        symbolTable = newScope;        // Usa a copia como nova tabela
     }
 
 
@@ -137,7 +137,7 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
         return "void";
     }
 
-    // Função auxiliar para verificar se a lista de parâmetros é void
+    // Funcao auxiliar para verificar se a lista de parâmetros é void
     private boolean isVoidParamList(List<String> params) {
         return params.size() == 1 && params.get(0).equals("void");
     }
@@ -176,7 +176,7 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
                         (paramCount == 0 && isVoidParamList(existingParamTypes)) ||
                         (existingParamTypes.size() == paramCount);
                     if (!paramsEquivalentes) {
-                        addError(ctx, "Erro: Número de parâmetros incompatível com a declaração da função '" + funcName + "'");
+                        addError(ctx, "Erro: Número de parâmetros incompatível com a declaracao da funcao '" + funcName + "'");
                     } else if (ctx.parameterList() != null && !existingParamTypes.isEmpty()) {
                         for (int i = 0; i < existingParamTypes.size(); i++) {
                             String declared = existingParamTypes.get(i);
@@ -227,14 +227,14 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
                 (paramCount == 0 && isVoidParamList(existingParamTypes)) ||
                 (existingParamTypes.size() == paramCount);
             if (!paramsEquivalentes) {
-                addError(ctx, "Erro: Número de parâmetros incompatível com a declaração da função '" + funcName + "'");
+                addError(ctx, "Erro: Número de parâmetros incompatível com a declaracao da funcao '" + funcName + "'");
             } else if (ctx.parameterList() != null && !existingParamTypes.isEmpty()) {
                 for (int i = 0; i < existingParamTypes.size(); i++) {
                     String declared = existingParamTypes.get(i);
                     String here = ctx.parameterList().parameter(i).funcType().getText()
                             + (ctx.parameterList().parameter(i).LEFTBRACKET() != null ? "[]" : "");
                     if (!declared.equals(here)) {
-                        addError(ctx, "Erro: Tipo do parâmetro " + (i+1) + " incompatível com a declaração de '" + funcName + "'");
+                        addError(ctx, "Erro: Tipo do parâmetro " + (i+1) + " incompatível com a declaracao de '" + funcName + "'");
                     }
                 }
             }
@@ -273,7 +273,7 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
 
 
 
-        // Verifica se a função tem return quando necessário
+        // Verifica se a funcao tem return quando necessário
         if (!returnType.equals("void") && !returnType.isEmpty()) {
             if (!containsReturn(ctx.blockStatement())) {
                 addError(ctx, "Erro: Funcao '" + funcName +
@@ -358,10 +358,10 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
                      varSymbol.isInitialized = true;
                  }
              } else {
-                 // Verificar inicialização de variável simples
+                 // Verificar inicializacao de variável simples
                  if (varInit.expression() == null) {
-                     varSymbol.isInitialized = true; // Assume valor padrão
-                     varSymbol.value = "0"; // Valor padrão
+                     varSymbol.isInitialized = true; // Assume valor padrao
+                     varSymbol.value = "0"; // Valor padrao
                  } else {
                      String exprType = visit(varInit.expression());
                      if (!exprType.equals(varType)) {
@@ -486,7 +486,7 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
             } else {
                 // Variable access case
                 if (symbol.isFunction) {
-                    // Se for uma função, verifica se está sendo usada como variável
+                    // Se for uma funcao, verifica se está sendo usada como variável
                     addError(ctx, "Erro: Funcao '" + identifier + "' usada como variavel");
                     return "void";
                 }
@@ -558,14 +558,14 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
         return resultType;
     }
 
-     // Multiplicação, suportando promoçao
+     // Multiplicacao, suportando promocao
     @Override
     public String visitMulExpr(MOCParser.MulExprContext ctx) {
         String resultType = visit(ctx.unaryExpr(0));
 
         for (int i = 1; i < ctx.unaryExpr().size(); i++) {
             String rightType = visit(ctx.unaryExpr(i));
-            // permite conversão
+            // permite conversao
             if (resultType.equals("int") && rightType.equals("double") ||
                     resultType.equals("double") && rightType.equals("int")) {
                 resultType = "double";
@@ -644,11 +644,11 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
 
         if (ctx.expression() != null) {
             String exprType = visit(ctx.expression());
-            // Verifica se o tipo da expressão é compatível com o tipo de retorno da função
+            // Verifica se o tipo da expressao é compatível com o tipo de retorno da funcao
             if (returnType.equals("void") || returnType.equals("")) {
-                addError(ctx, "Erro: Função de tipo void não pode retornar valor");
+                addError(ctx, "Erro: Funcao de tipo void nao pode retornar valor");
             } else if (!exprType.equals(returnType)) {
-                // Permite conversão implícita de int para double
+                // Permite conversao implícita de int para double
                 if (!(exprType.equals("int") && returnType.equals("double"))) {
                     addError(ctx, "Erro: Tipo de retorno incompativel na funcao '" + currentFunction +
                             "'. Esperado '" + returnType + "', encontrado '" + exprType + "'");

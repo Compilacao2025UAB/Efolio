@@ -1,4 +1,4 @@
-// Teste: declaração com expressão aritmética.
+// Teste: declaracao com expressao aritmética.
 int main() {
     int m = 1, n = 2 * m;
     double x = 3.14, y = x / 2;

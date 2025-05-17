@@ -1,4 +1,4 @@
-// Teste: casting e conversão de tipos.
+// Teste: casting e conversao de tipos.
 int main() {
     int a = 5;
     double b = (double)a / 2; // Espera-se: 2.5

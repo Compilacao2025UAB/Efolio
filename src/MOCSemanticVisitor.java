@@ -29,7 +29,7 @@ public class MOCSemanticVisitor extends MOCBaseVisitor<String> {
         
         // Verificar se a variável existe
         if (!symbolTable.containsKey(target)) {
-            System.err.println("Erro: Variável '" + target + "' não declarada");
+            System.err.println("Erro: Variável '" + target + "' nao declarada");
             hasErrors = true;
         }
         

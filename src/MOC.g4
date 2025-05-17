@@ -61,8 +61,9 @@ DOUBLE_LITERAL : [0-9]+ DOT [0-9]+ | DOT [0-9]+ ;
 
 // Para int escolhemos não permitir numeros começados por 0 alem de 0 em si
 INT_LITERAL    : '0' | [1-9][0-9]*;
-STRING_LITERAL : '"' (STR_ESCAPE | ~["\\\r\n])* '"' ;
 
+// String literal atualizado para aceitar caracteres especiais
+STRING_LITERAL : '"' (STR_ESCAPE | ~["\\\r\n])* '"' ;
 
 // Permite a inserçao de caracteres especiais dentro de um string literal
 fragment STR_ESCAPE
@@ -88,8 +89,8 @@ READ            :'read';
 READC           :'readc';
 READS           :'reads';
 
-// Identifiers
-IDENTIFIER   : [a-zA-Z_][a-zA-Z0-9_]*;
+// Identifiers - atualizado para aceitar caracteres especiais
+IDENTIFIER   : [a-zA-Z\u00C0-\u00FF_][a-zA-Z0-9\u00C0-\u00FF_]*;
 DIGIT        : [0-9]+ ;
 
 // Espaços em branco

@@ -1,0 +1,12 @@
+// Teste: declaração sem inicialização. Todas as variáveis devem ser inicializadas a 0.
+int main() {
+    int m,n,v[3];
+    double x,y,z;
+    write(m);   // Espera-se: 0
+    write(n);   // Espera-se: 0
+    write(v[0]); // Espera-se: 0
+    write(x);   // Espera-se: 0
+    write(y);   // Espera-se: 0
+    write(z);   // Espera-se: 0
+    return 0;
+} 

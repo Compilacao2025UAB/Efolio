@@ -1,0 +1,10 @@
+// Teste: declaração com expressão aritmética.
+int main() {
+    int m = 1, n = 2 * m;
+    double x = 3,14, y = x / 2;
+    write(m);   // Espera-se: 1
+    write(n);   // Espera-se: 2
+    write(x);   // Espera-se: 3.14
+    write(y);   // Espera-se: 1.57
+    return 0;
+} 

@@ -5,16 +5,23 @@ import org.antlr.v4.gui.TreeViewer;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Arrays;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
+import parser.MOCLexer;
+import parser.MOCParser;
+import parser.MOCBaseVisitor;
 
 public class Main {
     public static void main(String[] args) {
         try {
             // Ler o arquivo de entrada
-            String inputFile = args.length > 0 ? args[0] : "testes/exemplo0.moc";
-            CharStream input = CharStreams.fromFileName(inputFile);
+            String input = new String(Files.readAllBytes(Paths.get(args[0])));
             
             // Criar o lexer
-            MOCLexer lexer = new MOCLexer(input);
+            MOCLexer lexer = new MOCLexer(CharStreams.fromString(input));
             
             // Criar o parser
             CommonTokenStream tokens = new CommonTokenStream(lexer);

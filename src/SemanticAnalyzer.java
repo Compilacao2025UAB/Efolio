@@ -2,8 +2,10 @@ import java.util.*;
 import org.antlr.v4.runtime.tree.*;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.ParserRuleContext;
+import parser.MOCBaseVisitor;
+import parser.MOCParser;
 
- // Analisador Semântico  linguagem MOCC
+// Analisador Semântico  linguagem MOCC
 
 public class SemanticAnalyzer extends MOCBaseVisitor<String> {
     // Tabela de símbolos que mapeia nomes de variáveis/funções para seus símbolos
@@ -38,6 +40,8 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
         typeMap.put("int", "int");
         typeMap.put("double", "double");
         typeMap.put("void", "void");
+        typeMap.put("char", "int");  // char é tratado como int
+        typeMap.put("string", "int[]");  // string é tratada como array de int
     }
 
    // Represente variaveis ou funções declaradas no codigo, guardando informação semantica
@@ -273,7 +277,7 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
      // Verifica se variaveis já foram declaradas e adiciona a tabela de simbolos
      @Override
      public String visitDeclaration(MOCParser.DeclarationContext ctx) {
-         MOCParser.VarTypeContext varTypeCtx = ctx.varType(0);
+         MOCParser.VarTypeContext varTypeCtx = ctx.varType();
          String varType = varTypeCtx.getText();
 
          for (MOCParser.VariableInitContext varInit : ctx.variableInit()) {
@@ -326,9 +330,9 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
 
     @Override
     public String visitPrimeExpr(MOCParser.PrimeExprContext ctx) {
-        if (ctx.INT_LITERAL() != null) {
+        if (ctx.intLiteral() != null) {
             return "int";
-        } else if (ctx.DOUBLE_LITERAL() != null) {
+        } else if (ctx.doubleLiteral() != null) {
             return "double";
         } else if (ctx.IDENTIFIER() != null) {
             String identifier = ctx.IDENTIFIER().getText();
@@ -705,7 +709,9 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
 
         // Verificar conversões permitidas
         if ((targetType.equals("int") && exprType.equals("double")) ||
-                (targetType.equals("double") && exprType.equals("int"))) {
+                (targetType.equals("double") && exprType.equals("int")) ||
+                (targetType.equals("int") && exprType.equals("int[]")) ||  // array de char para int
+                (targetType.equals("int[]") && exprType.equals("int"))) {  // int para array de char
             return targetType;
         } else {
             addError(ctx, "Erro: Cast invalido de '" + exprType + "' para '" + targetType + "'");

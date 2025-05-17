@@ -1,0 +1,9 @@
+// Teste: casting e conversão de tipos.
+int main() {
+    int a = 5;
+    double b = (double)a / 2; // Espera-se: 2.5
+    int c = (int)b;           // Espera-se: 2
+    write(b);   // Deve escrever 2.5
+    write(c);   // Deve escrever 2
+    return 0;
+} 

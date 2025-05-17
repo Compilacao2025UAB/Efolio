@@ -1,0 +1,8 @@
+int main() {
+    int c = readc();
+    int s[] = reads();
+    writec(c);
+    writes(s);
+    writes("Hello, World!");
+    return 0;
+} 

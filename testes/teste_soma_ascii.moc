@@ -1,0 +1,15 @@
+// O utilizador insere dois caracteres, o programa soma os seus valores ASCII e mostra o resultado
+
+int main() {
+    int a;
+    int b;
+    int soma;
+    writes("Insira o primeiro caractere: ");
+    read(a); // O utilizador insere o primeiro caractere
+    writes("Insira o segundo caractere: ");
+    read(b); // O utilizador insere o segundo caractere
+    soma = a + b;
+    writes("A soma dos valores ASCII é: ");
+    write(soma);
+    return 0;
+} 

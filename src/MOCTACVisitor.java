@@ -1,6 +1,8 @@
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import java.util.Stack;
+import parser.MOCBaseVisitor;
+import parser.MOCParser;
 
 public class MOCTACVisitor extends MOCBaseVisitor<String> {
     private TACGenerator generator;
@@ -127,10 +129,10 @@ public class MOCTACVisitor extends MOCBaseVisitor<String> {
 
     @Override
     public String visitPrimeExpr(MOCParser.PrimeExprContext ctx) {
-        if (ctx.INT_LITERAL() != null) {
-            return ctx.INT_LITERAL().getText();
-        } else if (ctx.DOUBLE_LITERAL() != null) {
-            return ctx.DOUBLE_LITERAL().getText();
+        if (ctx.intLiteral() != null) {
+            return ctx.intLiteral().getText();
+        } else if (ctx.doubleLiteral() != null) {
+            return ctx.doubleLiteral().getText();
         } else if (ctx.getChild(0).getText().startsWith("\"") && ctx.getChild(0).getText().endsWith("\"")) {
             // Remove as aspas da string literal
             String str = ctx.getChild(0).getText();

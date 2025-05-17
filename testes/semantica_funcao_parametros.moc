@@ -1,0 +1,9 @@
+int soma(int a, int b) {
+    return a + b;
+}
+
+int main() {
+    int resultado;
+    resultado = soma(5); // Falta um parâmetro
+    return 0;
+} 

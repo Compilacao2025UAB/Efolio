@@ -1,0 +1,3 @@
+int main() {
+    return 3.14;  // Erro: retorna double quando deveria retornar int
+} 

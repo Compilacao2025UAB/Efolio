@@ -61,7 +61,8 @@ echo Executando programa...
 echo.
 
 REM Run the program with teste1.moc
-java -Dfile.encoding=UTF-8 -cp "%OUT_DIR%;%LIB_DIR%\antlr-4.13.2-complete.jar" Main testes\teste2.moc
+java -Dfile.encoding=UTF-8 -cp "%OUT_DIR%;%LIB_DIR%\antlr-4.13.2-complete.jar" Main testes\exemplo2.moc
+
 echo.
 pause
 

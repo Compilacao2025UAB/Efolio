@@ -300,29 +300,61 @@ public class MOCTACVisitor extends MOCBaseVisitor<String> {
     @Override
     public String visitWriteStatement(MOCParser.WriteStatementContext ctx) {
         if (ctx.WRITE() != null) {
-            String value = visit(ctx.expression());
-            generator.addInstruction(new TACInstruction(
-                TACInstruction.OpType.WRITE,
-                null,
-                value,
-                null
-            ));
+            if (ctx.expression() != null) {
+                String value = visit(ctx.expression());
+                generator.addInstruction(new TACInstruction(
+                    TACInstruction.OpType.WRITE,
+                    null,
+                    value,
+                    null
+                ));
+            } else {
+                System.err.println("Erro: write() sem expressão.");
+            }
         } else if (ctx.WRITEC() != null) {
-            String value = visit(ctx.expression());
-            generator.addInstruction(new TACInstruction(
-                TACInstruction.OpType.WRITE,
-                null,
-                value,
-                null
-            ));
+            if (ctx.expression() != null) {
+                String value = visit(ctx.expression());
+                generator.addInstruction(new TACInstruction(
+                    TACInstruction.OpType.WRITE,
+                    null,
+                    value,
+                    null
+                ));
+            } else {
+                System.err.println("Erro: writec() sem expressão.");
+            }
         } else if (ctx.WRITES() != null) {
-            String value = visit(ctx.expression());
-            generator.addInstruction(new TACInstruction(
-                TACInstruction.OpType.WRITE,
-                null,
-                value,
-                null
-            ));
+            if (ctx.expression() != null) {
+                String value = visit(ctx.expression());
+                generator.addInstruction(new TACInstruction(
+                    TACInstruction.OpType.WRITE,
+                    null,
+                    value,
+                    null
+                ));
+            } else if (ctx.STRING_LITERAL() != null) {
+                String value = ctx.STRING_LITERAL().getText();
+                generator.addInstruction(new TACInstruction(
+                    TACInstruction.OpType.WRITE,
+                    null,
+                    value,
+                    null
+                ));
+            } else {
+                System.err.println("Erro: writes() sem expressão ou string literal.");
+            }
+        } else if (ctx.WRITEV() != null) {
+            if (ctx.expression() != null) {
+                String value = visit(ctx.expression());
+                generator.addInstruction(new TACInstruction(
+                    TACInstruction.OpType.WRITE,
+                    null,
+                    value,
+                    null
+                ));
+            } else {
+                System.err.println("Erro: writev() sem expressão.");
+            }
         }
         return null;
     }

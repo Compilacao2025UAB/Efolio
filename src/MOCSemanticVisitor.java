@@ -24,6 +24,7 @@ public class MOCSemanticVisitor extends MOCBaseVisitor<String> {
     @Override
     public String visitAssignment(MOCParser.AssignmentContext ctx) {
         String target = ctx.assignable().getText();
+        @SuppressWarnings("unused")
         String value = visit(ctx.expression());
         
         // Verificar se a variável existe

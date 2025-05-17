@@ -27,6 +27,22 @@ public class Main {
             return;
         }
 
+        // Verificar se o ficheiro existe
+        if (!Files.exists(Paths.get(args[0]))) {
+            System.err.println("Erro: Ficheiro de entrada não existe.");
+            return;
+        }
+        // Verificar se o ficheiro está vazio
+        try {
+            if (Files.size(Paths.get(args[0])) == 0) {
+                System.err.println("Erro: Ficheiro de entrada está vazio.");
+                return;
+            }
+        } catch (IOException e) {
+            System.err.println("Erro ao verificar o tamanho do ficheiro: " + e.getMessage());
+            return;
+        }
+
         try {
             // Ler o arquivo de entrada
             CharStream input = CharStreams.fromFileName(args[0]);
@@ -41,15 +57,6 @@ public class Main {
             // Obter a árvore sintática
             ParseTree tree = parser.program();
             
-            // Visualização gráfica da AST do ANTLR
-            JFrame frame = new JFrame("AST - ANTLR");
-            TreeViewer viewer = new TreeViewer(Arrays.asList(parser.getRuleNames()), tree);
-            viewer.setScale(1.5); // aumenta o zoom se necessário
-            frame.add(viewer);
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(800, 600);
-            frame.setVisible(true);
-            
             // Verificar erros de sintaxe
             if (parser.getNumberOfSyntaxErrors() > 0) {
                 System.err.println("\n=== ERROS DE SINTAXE ===");
@@ -57,6 +64,25 @@ public class Main {
                 System.err.println("Compilação abortada.");
                 return;
             }
+            
+            // Verificar se a árvore é nula
+            if (tree == null) {
+                System.err.println("Erro: Não foi possível gerar a árvore sintática (ParseTree). Verifique a gramática e o ficheiro de entrada.");
+                return;
+            }
+            
+            // Visualização gráfica da AST do ANTLR
+            JFrame frame = new JFrame("AST - ANTLR");
+            TreeViewer viewer = new TreeViewer(Arrays.asList(parser.getRuleNames()), tree);
+            viewer.setScale(1.5); // aumenta o zoom se necessário
+            
+            // Adicionar barras de rolagem
+            JScrollPane scrollPane = new JScrollPane(viewer);
+            frame.add(scrollPane);
+            
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setSize(800, 600);
+            frame.setVisible(true);
             
             // Análise semântica
             SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer();

@@ -5,8 +5,8 @@ void main(void) {
     int vetor[3];
     vetor[1.5] = 10;   // Erro semântico: índice não inteiro
 
-    if (x == y {       // Erro sintático: parêntese não fechado
-        x += 3;        // Erro léxico: operador '+=' não permitido
+    if (x == y) {       // Erro sintático: parêntese não fechado
+        x = x + 3;        // Erro léxico: operador '+=' não permitido
     }
 
     10 = x;            // Erro semântico: atribuição a literal

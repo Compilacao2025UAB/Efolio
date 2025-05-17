@@ -1,6 +1,6 @@
 // Teste: mistura de formas de declaração e inicialização de vetor.
 int main() {
-    int a, b = read(), c = 2 * b, v[] = {1, 2, 3};
+    int a, b = read(), c = 2 * b, v[] = {1, 2.5, 3};
     write(a);      // Espera-se: 0
     write(b);      // Deve escrever o valor lido
     write(c);      // Deve escrever 2*b

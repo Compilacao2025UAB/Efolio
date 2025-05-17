@@ -115,6 +115,7 @@ statement
     | returnStatement
     | blockStatement
     | expression SEMICOLON
+    // adiciona a chamada de funçoes
     ;
 
 // Block statement permite a criaçao de blocos, { ( x= 4) }  por exemplo
@@ -201,8 +202,7 @@ primeExpr
     | IDENTIFIER
     | intLiteral
     | doubleLiteral
-    | LEFTPARENTESIS expression RIGHTPARENTESIS
-    | LEFTBRACE expressionList RIGHTBRACE
+    | '(' expression ')'
     ;
 
 // Literais com verificação de tipo

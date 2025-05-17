@@ -37,6 +37,15 @@ public class Main {
             // Obter a árvore sintática
             ParseTree tree = parser.program();
             
+            // Visualização gráfica da AST do ANTLR
+            JFrame frame = new JFrame("AST - ANTLR");
+            TreeViewer viewer = new TreeViewer(Arrays.asList(parser.getRuleNames()), tree);
+            viewer.setScale(1.5); // aumenta o zoom se necessário
+            frame.add(viewer);
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setSize(800, 600);
+            frame.setVisible(true);
+            
             // Verificar erros de sintaxe
             if (parser.getNumberOfSyntaxErrors() > 0) {
                 System.err.println("\n=== ERROS DE SINTAXE ===");

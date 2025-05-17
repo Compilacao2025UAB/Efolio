@@ -113,8 +113,10 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
         return "void";
     }
 
-
-
+    // Função auxiliar para verificar se a lista de parâmetros é void
+    private boolean isVoidParamList(List<String> params) {
+        return params.size() == 1 && params.get(0).equals("void");
+    }
 
     // Verifica a definao de funcoes
     @Override
@@ -143,15 +145,21 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
                         addError(ctx, "Erro: Tipo de retorno incompatível com a declaração de '" + funcName + "'");
 
                     int paramCount = ctx.parameterList() != null ? ctx.parameterList().parameter().size() : 0;
-                    if (existing.paramTypes.size() != paramCount)
-                        addError(ctx, "Erro: Número de parâmetros incompatível com a declaração de '" + funcName + "'");
-                    else if (ctx.parameterList() != null) {
-                        for (int i = 0; i < existing.paramTypes.size(); i++) {
-                            String declared = existing.paramTypes.get(i);
+                    List<String> existingParamTypes = existing.paramTypes;
+                    // Trata main(void) e main() como equivalentes
+                    boolean paramsEquivalentes =
+                        (existingParamTypes.isEmpty() && paramCount == 1 && ctx.parameterList().parameter(0).funcType().getText().equals("void")) ||
+                        (paramCount == 0 && isVoidParamList(existingParamTypes)) ||
+                        (existingParamTypes.size() == paramCount);
+                    if (!paramsEquivalentes) {
+                        addError(ctx, "Erro: Número de parâmetros incompatível com a declaração da função '" + funcName + "'");
+                    } else if (ctx.parameterList() != null && !existingParamTypes.isEmpty()) {
+                        for (int i = 0; i < existingParamTypes.size(); i++) {
+                            String declared = existingParamTypes.get(i);
                             String here = ctx.parameterList().parameter(i).funcType().getText()
                                     + (ctx.parameterList().parameter(i).LEFTBRACKET() != null ? "[]" : "");
                             if (!declared.equals(here)) {
-                                addError(ctx, "Erro: Tipo do parâmetro " + (i+1) + " incompatível em '" + funcName + "'");
+                                addError(ctx, "Erro: Tipo do parâmetro " + (i+1) + " incompatível com a declaração de '" + funcName + "'");
                             }
                         }
                     }
@@ -188,11 +196,17 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
             }
 
             int paramCount = ctx.parameterList() != null ? ctx.parameterList().parameter().size() : 0;
-            if (existing.paramTypes.size() != paramCount) {
+            List<String> existingParamTypes = existing.paramTypes;
+            // Trata main(void) e main() como equivalentes
+            boolean paramsEquivalentes =
+                (existingParamTypes.isEmpty() && paramCount == 1 && ctx.parameterList().parameter(0).funcType().getText().equals("void")) ||
+                (paramCount == 0 && isVoidParamList(existingParamTypes)) ||
+                (existingParamTypes.size() == paramCount);
+            if (!paramsEquivalentes) {
                 addError(ctx, "Erro: Número de parâmetros incompatível com a declaração da função '" + funcName + "'");
-            } else if (ctx.parameterList() != null && !existing.paramTypes.isEmpty()) {
-                for (int i = 0; i < existing.paramTypes.size(); i++) {
-                    String declared = existing.paramTypes.get(i);
+            } else if (ctx.parameterList() != null && !existingParamTypes.isEmpty()) {
+                for (int i = 0; i < existingParamTypes.size(); i++) {
+                    String declared = existingParamTypes.get(i);
                     String here = ctx.parameterList().parameter(i).funcType().getText()
                             + (ctx.parameterList().parameter(i).LEFTBRACKET() != null ? "[]" : "");
                     if (!declared.equals(here)) {
@@ -234,7 +248,7 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
         visit(ctx.blockStatement());
         
         // Verifica se a função tem return quando necessário
-        if (!returnType.equals("void")) {
+        if (!returnType.equals("void") && !returnType.equals("")) {
             boolean hasReturn = false;
             for (MOCParser.StatementContext stmt : ctx.blockStatement().statement()) {
                 if (stmt.returnStatement() != null) {
@@ -372,13 +386,13 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
                 if (ctx.expressionList() != null) {
                     for (MOCParser.ExpressionContext expr : ctx.expressionList().expression()) {
                         String type = visit(expr);
-                        // Se o tipo for int e o símbolo for um array, adiciona []
-                        if (type.equals("int")) {
-                            Symbol argSymbol = symbolTable.get(expr.getText());
-                            if (argSymbol != null && argSymbol.isArray) {
-                                type = "int[]";
-                            }
+
+                        // Verifica se o argumento é um array (nome do array)
+                        Symbol argSymbol = symbolTable.get(expr.getText());
+                        if (argSymbol != null && argSymbol.isArray) {
+                            type = argSymbol.type + "[]"; // Ex: "double[]"
                         }
+
                         argTypes.add(type);
                     }
                 }
@@ -611,7 +625,9 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
             String exprType = visit(ctx.expression());
             System.out.println("DEBUG: Tipo de retorno da expressão: " + exprType + " (esperado: " + returnType + ")");
             // Verifica se o tipo da expressão é compatível com o tipo de retorno da função
-            if (!exprType.equals(returnType)) {
+            if (returnType.equals("void") || returnType.equals("")) {
+                addError(ctx, "Erro: Função de tipo void não pode retornar valor");
+            } else if (!exprType.equals(returnType)) {
                 // Permite conversão implícita de int para double
                 if (!(exprType.equals("int") && returnType.equals("double"))) {
                     addError(ctx, "Erro: Tipo de retorno incompativel na funcao '" + currentFunction + 

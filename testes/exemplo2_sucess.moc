@@ -3,10 +3,14 @@
 int fact(int);
 void main(void);
 
+
 int fact (int k) {
 if (k<=1) { return 1; }
-else {return k * fact (k-1); }
+else {return k * fact (k-1); } // Compilador não reconhece o resultado da operação como 'int'
 }
+
+
+
 void main(void){
 int n;
 writes("Introduza inteiro: ");

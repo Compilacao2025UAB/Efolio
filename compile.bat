@@ -62,7 +62,6 @@ echo.
 
 REM Run the program with teste1.moc
 java -cp "%OUT_DIR%;%LIB_DIR%\antlr-4.13.2-complete.jar" Main testes\exemplo2_sucess.moc
-
 echo.
 pause
 

@@ -128,7 +128,11 @@ statement
     | returnStatement
     | blockStatement
     | expression SEMICOLON
+<<<<<<< HEAD
     // adiciona a chamada de funçoes
+=======
+
+>>>>>>> f6eb9c17de09edadd238bb75b5127cbb029b2153
     ;
 
 
@@ -218,7 +222,8 @@ primeExpr
     | IDENTIFIER
     | intLiteral
     | doubleLiteral
-    | '(' expression ')'
+    | LEFTPARENTESIS expression RIGHTPARENTESIS
+    | LEFTBRACE expressionList RIGHTBRACE
     ;
 
 // Literais com verificação de tipo
@@ -306,6 +311,3 @@ loop
 conditional
     : IF LEFTPARENTESIS expression RIGHTPARENTESIS blockStatement ( ELSE blockStatement )?
     ;
-
-
-

@@ -1,6 +1,3 @@
-import java.io.*;
-import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.tree.*;
 import org.antlr.v4.gui.TreeViewer;
 import javax.swing.*;
 import java.awt.*;
@@ -12,9 +9,9 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import parser.MOCLexer;
 import parser.MOCParser;
-import parser.MOCBaseVisitor;
 
 public class Main {
+    @SuppressWarnings("unused")
     public static void main(String[] args) {
         try {
             // Ler o arquivo de entrada

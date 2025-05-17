@@ -2,11 +2,12 @@ public class TACInstruction {
     public enum OpType {
         ASSIGN, ADD, SUB, MUL, DIV, MOD,
         AND, OR, NOT,
-        LT, GT, LEQ, GEQ, EQ, NEQ,
+        LT, GT, LEQ, GEQ, EQUAL, NOTEQUAL,
         LABEL, JUMP, JUMPZ, JUMPNZ,
         PARAM, CALL, RETURN,
         READ, READC, READS,
-        WRITE, WRITEC, WRITES
+        WRITE, WRITEC, WRITES,
+        CAST, ARRAY_ACCESS
     }
 
     private OpType op;
@@ -48,7 +49,14 @@ public class TACInstruction {
             case WRITEC:
             case WRITES:
                 return "write " + arg1;
+            case CAST:
+                return result + " = (" + arg2 + ") " + arg1;
+            case ARRAY_ACCESS:
+                return result + " = " + arg1 + "[" + arg2 + "]";
             default:
+                if (op == OpType.NOT) {
+                    return result + " = !" + arg1;
+                }
                 return result + " = " + arg1 + " " + op.toString() + " " + arg2;
         }
     }

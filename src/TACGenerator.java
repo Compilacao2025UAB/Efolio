@@ -81,6 +81,8 @@ public class TACGenerator {
                             case SUB: result = arg1 - arg2; break;
                             case MUL: result = arg1 * arg2; break;
                             case DIV: result = arg1 / arg2; break;
+                            default:
+                                break;
                         }
                         
                         instructions.set(i, new TACInstruction(

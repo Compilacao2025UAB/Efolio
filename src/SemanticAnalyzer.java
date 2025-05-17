@@ -1,6 +1,4 @@
 import java.util.*;
-import org.antlr.v4.runtime.tree.*;
-import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.ParserRuleContext;
 import parser.MOCBaseVisitor;
 import parser.MOCParser;
@@ -46,12 +44,14 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
 
    // Represente variaveis ou funções declaradas no codigo, guardando informação semantica
     private static class Symbol {
+        @SuppressWarnings("unused")
         String name;        // Nome do símbolo
         String type;        // Tipo do símbolo
         boolean isArray;    // Se é um array
         boolean isFunction; // Se é uma função
         List<String> paramTypes; // Tipos dos parâmetros (se for função)
         boolean isInitialized;   // Se foi inicializado
+        @SuppressWarnings("unused")
         boolean isUsed;          // Se foi usado
 
         Symbol(String name, String type, boolean isArray, boolean isFunction) {
@@ -617,6 +617,7 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
         }
         else if (ctx.WRITEV() != null) {
             // Handle writev() - for array output
+            @SuppressWarnings("unused")
             String exprType = visit(ctx.expression());
             Symbol symbol = symbolTable.get(ctx.expression().getText());
 
@@ -632,6 +633,7 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
             }
             else if (ctx.expression() != null) {
                 // Array case - must be array of int (char)
+                @SuppressWarnings("unused")
                 String exprType = visit(ctx.expression());
                 Symbol symbol = symbolTable.get(ctx.expression().getText());
 

@@ -1,5 +1,4 @@
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import java.util.Stack;
 import parser.MOCBaseVisitor;
 import parser.MOCParser;
@@ -128,16 +127,143 @@ public class MOCTACVisitor extends MOCBaseVisitor<String> {
     }
 
     @Override
+    public String visitOrExpr(MOCParser.OrExprContext ctx) {
+        String result = generator.newTemp();
+        String left = visit(ctx.andExpr(0));
+        
+        for (int i = 1; i < ctx.andExpr().size(); i++) {
+            String right = visit(ctx.andExpr(i));
+            
+            generator.addInstruction(new TACInstruction(
+                TACInstruction.OpType.OR,
+                result,
+                left,
+                right
+            ));
+            left = result;
+            result = generator.newTemp();
+        }
+        
+        valueStack.push(left);
+        return left;
+    }
+
+    @Override
+    public String visitAndExpr(MOCParser.AndExprContext ctx) {
+        String result = generator.newTemp();
+        String left = visit(ctx.relExpr(0));
+        
+        for (int i = 1; i < ctx.relExpr().size(); i++) {
+            String right = visit(ctx.relExpr(i));
+            
+            generator.addInstruction(new TACInstruction(
+                TACInstruction.OpType.AND,
+                result,
+                left,
+                right
+            ));
+            left = result;
+            result = generator.newTemp();
+        }
+        
+        valueStack.push(left);
+        return left;
+    }
+
+    @Override
+    public String visitRelExpr(MOCParser.RelExprContext ctx) {
+        String result = generator.newTemp();
+        String left = visit(ctx.addExpr(0));
+        
+        for (int i = 1; i < ctx.addExpr().size(); i++) {
+            String right = visit(ctx.addExpr(i));
+            String op = ctx.getChild(2*i-1).getText();
+            
+            TACInstruction.OpType opType;
+            switch (op) {
+                case "<": opType = TACInstruction.OpType.LT; break;
+                case ">": opType = TACInstruction.OpType.GT; break;
+                case "<=": opType = TACInstruction.OpType.LEQ; break;
+                case ">=": opType = TACInstruction.OpType.GEQ; break;
+                case "==": opType = TACInstruction.OpType.EQUAL; break;
+                default: opType = TACInstruction.OpType.NOTEQUAL;
+            }
+            
+            generator.addInstruction(new TACInstruction(
+                opType,
+                result,
+                left,
+                right
+            ));
+            left = result;
+            result = generator.newTemp();
+        }
+        
+        valueStack.push(left);
+        return left;
+    }
+
+    @Override
+    public String visitCastExpr(MOCParser.CastExprContext ctx) {
+        String result = generator.newTemp();
+        String value = visit(ctx.unaryExpr());
+        String type = ctx.varType().getText();
+        
+        generator.addInstruction(new TACInstruction(
+            TACInstruction.OpType.CAST,
+            result,
+            value,
+            type
+        ));
+        
+        return result;
+    }
+
+    @Override
+    public String visitAssignable(MOCParser.AssignableContext ctx) {
+        if (ctx.LEFTBRACKET() != null) {
+            // Array access
+            String array = ctx.IDENTIFIER().getText();
+            String index = visit(ctx.expression());
+            String temp = generator.newTemp();
+            
+            generator.addInstruction(new TACInstruction(
+                TACInstruction.OpType.ARRAY_ACCESS,
+                temp,
+                array,
+                index
+            ));
+            
+            return temp;
+        }
+        return ctx.IDENTIFIER().getText();
+    }
+
+    @Override
     public String visitPrimeExpr(MOCParser.PrimeExprContext ctx) {
         if (ctx.intLiteral() != null) {
             return ctx.intLiteral().getText();
         } else if (ctx.doubleLiteral() != null) {
             return ctx.doubleLiteral().getText();
         } else if (ctx.getChild(0).getText().startsWith("\"") && ctx.getChild(0).getText().endsWith("\"")) {
-            // Remove as aspas da string literal
             String str = ctx.getChild(0).getText();
             return str.substring(1, str.length() - 1);
         } else if (ctx.IDENTIFIER() != null) {
+            if (ctx.LEFTBRACKET() != null) {
+                // Array access
+                String array = ctx.IDENTIFIER().getText();
+                String index = visit(ctx.expression());
+                String temp = generator.newTemp();
+                
+                generator.addInstruction(new TACInstruction(
+                    TACInstruction.OpType.ARRAY_ACCESS,
+                    temp,
+                    array,
+                    index
+                ));
+                
+                return temp;
+            }
             return ctx.IDENTIFIER().getText();
         } else if (ctx.expression() != null) {
             return visit(ctx.expression());
@@ -301,8 +427,15 @@ public class MOCTACVisitor extends MOCBaseVisitor<String> {
     }
 
     @Override
-    public String visitTerminal(org.antlr.v4.runtime.tree.TerminalNode node) {
-        return node.getText();
+    public String visitReturnStatement(MOCParser.ReturnStatementContext ctx) {
+        String value = visit(ctx.expression());
+        generator.addInstruction(new TACInstruction(
+            TACInstruction.OpType.RETURN,
+            null,
+            value,
+            null
+        ));
+        return null;
     }
 
     public TACGenerator getGenerator() {

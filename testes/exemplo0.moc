@@ -31,7 +31,7 @@ double avg(double v[], int tamanho) {
 void processarTexto(int texto[]) {
     int i = 0;
     while (texto[i] != 0) { // Processa até encontrar o terminador
-        writec(texto[i]);   // Escreve cada caráter correspondente ao código ASCII
+        writec(texto[i]);   // Escreve cada caráter correspondente ao codigo ASCII
         i = i + 1;
     }
     writes(""); // Nova linha

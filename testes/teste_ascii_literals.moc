@@ -7,6 +7,6 @@ write("Compilação");   // Deve ser convertido para write({67, 111, 109, 112, 1
 write('B');             // Deve ser convertido para write(66) 
 
 int main() {
-    // Código de teste aqui
+    // Codigo de teste aqui
     return 0;
 } 

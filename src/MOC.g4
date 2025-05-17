@@ -128,11 +128,7 @@ statement
     | returnStatement
     | blockStatement
     | expression SEMICOLON
-<<<<<<< HEAD
     // adiciona a chamada de funçoes
-=======
-
->>>>>>> f4743e5459940b445c7a4d39e686bcb3aee1972a
     ;
 
 

@@ -8,6 +8,8 @@ import parser.MOCParser;
 public class SemanticAnalyzer extends MOCBaseVisitor<String> {
     // Tabela de símbolos que mapeia nomes de variáveis/funções para seus símbolos
     private Map<String, Symbol> symbolTable;
+    // Mapa global para manter todas as variáveis
+    private Map<String, Symbol> globalSymbolTable;
     // Pilha de escopos para gerenciar variáveis locais
     private Stack<Map<String, Symbol>> scopeStack;
     // Lista de erros semânticos encontrados
@@ -22,6 +24,7 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
     // Initializa estrutura de dados
     public SemanticAnalyzer() {
         this.symbolTable = new HashMap<>();
+        this.globalSymbolTable = new HashMap<>();
         this.scopeStack = new Stack<>();
         this.errors = new ArrayList<>();
         this.hasMainFunction = false;
@@ -43,7 +46,7 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
     }
 
    // Represente variaveis ou funções declaradas no codigo, guardando informação semantica
-    private static class Symbol {
+    public static class Symbol {
         @SuppressWarnings("unused")
         String name;        // Nome do símbolo
         String type;        // Tipo do símbolo
@@ -53,6 +56,7 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
         boolean isInitialized;   // Se foi inicializado
         @SuppressWarnings("unused")
         boolean isUsed;          // Se foi usado
+        String value;            // Valor da variável
 
         Symbol(String name, String type, boolean isArray, boolean isFunction) {
             this.name = name;
@@ -62,24 +66,31 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
             this.paramTypes = new ArrayList<>();
             this.isInitialized = false;
             this.isUsed = false;
+            this.value = null;
         }
     }
 
     // Guarda a tabela de simbolos atual
     private void enterScope() {
-        // Cria uma cópia completa da tabela de símbolos atual
+        // Cria uma copia completa da tabela de símbolos atual
         Map<String, Symbol> newScope = new HashMap<>();
         for (Map.Entry<String, Symbol> entry : symbolTable.entrySet()) {
             newScope.put(entry.getKey(), entry.getValue());
         }
         scopeStack.push(symbolTable);  // Guarda a tabela atual
-        symbolTable = newScope;        // Usa a cópia como nova tabela
+        symbolTable = newScope;        // Usa a copia como nova tabela
     }
 
 
     // Remove a tabela de símbolos do escopo atual
     private void exitScope() {
         if (!scopeStack.isEmpty()) {
+            // Antes de restaurar o escopo anterior, salva as variáveis locais no mapa global
+            for (Map.Entry<String, Symbol> entry : symbolTable.entrySet()) {
+                if (!entry.getValue().isFunction) {
+                    globalSymbolTable.put(entry.getKey(), entry.getValue());
+                }
+            }
             // Restaura o escopo anterior
             symbolTable = scopeStack.pop();
         }
@@ -321,8 +332,7 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
              }
 
              Symbol varSymbol = new Symbol(varName, varType, isArray, false);
-             symbolTable.put(varName, varSymbol);
-
+             
              if (isArray) {
                  // Verificar inicialização explícita de array
                  if (varInit.arrayLiteral() != null) {
@@ -342,15 +352,19 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
                  // Verificar inicialização de variável simples
                  if (varInit.expression() == null) {
                      varSymbol.isInitialized = true; // Assume valor padrão
+                     varSymbol.value = "0"; // Valor padrão
                  } else {
                      String exprType = visit(varInit.expression());
                      if (!exprType.equals(varType)) {
                          addError(ctx, "Erro: Tipo incompativel na inicializacao de '" + varName + "'");
                      } else {
                          varSymbol.isInitialized = true;
+                         varSymbol.value = varInit.expression().getText(); // Captura o valor inicial
                      }
                  }
              }
+             
+             symbolTable.put(varName, varSymbol);
          }
 
          return varType;
@@ -542,11 +556,9 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
 
         for (int i = 1; i < ctx.unaryExpr().size(); i++) {
             String rightType = visit(ctx.unaryExpr(i));
-            System.out.println("DEBUG: Multiplicação entre " + resultType + " e " + rightType);
-
-            if ((resultType.equals("int") && rightType.equals("double")) ||
-                    (resultType.equals("double") && rightType.equals("int"))) {
-                // promoçao
+            // permite conversão
+            if (resultType.equals("int") && rightType.equals("double") ||
+                    resultType.equals("double") && rightType.equals("int")) {
                 resultType = "double";
             } else if (!resultType.equals(rightType)) {
                 addError(ctx, "Erro: Tipos incompativeis na operaçao aritmetica");
@@ -623,7 +635,6 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
 
         if (ctx.expression() != null) {
             String exprType = visit(ctx.expression());
-            System.out.println("DEBUG: Tipo de retorno da expressão: " + exprType + " (esperado: " + returnType + ")");
             // Verifica se o tipo da expressão é compatível com o tipo de retorno da função
             if (returnType.equals("void") || returnType.equals("")) {
                 addError(ctx, "Erro: Função de tipo void não pode retornar valor");
@@ -872,6 +883,15 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
     // Retorna a lista de erros semanticos encontrados
     public List<String> getErrors() {
         return errors;
+    }
+
+    public Map<String, Symbol> getSymbolTable() {
+        // Combina a tabela de símbolos atual com o mapa global
+        Map<String, Symbol> combinedTable = new HashMap<>(globalSymbolTable);
+        for (Map.Entry<String, Symbol> entry : symbolTable.entrySet()) {
+            combinedTable.put(entry.getKey(), entry.getValue());
+        }
+        return combinedTable;
     }
 }
 

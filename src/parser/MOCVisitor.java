@@ -17,6 +17,18 @@ public interface MOCVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitProgram(MOCParser.ProgramContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link MOCParser#localFuncDecl}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLocalFuncDecl(MOCParser.LocalFuncDeclContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MOCParser#localFuncDef}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLocalFuncDef(MOCParser.LocalFuncDefContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link MOCParser#statement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

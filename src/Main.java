@@ -13,10 +13,14 @@ import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 import parser.*;
 import java.io.*;
+import java.util.Map;
 
 public class Main {
     @SuppressWarnings("unused")
     public static void main(String[] args) {
+        // Configurar codificação UTF-8 para o output
+        System.setProperty("file.encoding", "UTF-8");
+        
         if (args.length == 0) {
             System.err.println("Erro: Nenhum arquivo de entrada especificado");
             System.err.println("Uso: java Main <arquivo.moc>");
@@ -69,15 +73,38 @@ public class Main {
                 return;
             }
             
-            // Gerar código intermediário
+            // Obter a tabela de símbolos do analisador semântico
+            Map<String, SemanticAnalyzer.Symbol> symbolTable = semanticAnalyzer.getSymbolTable();
+            System.out.println("\n=== TABELA DE SIMBOLOS DO ANALISADOR SEMANTICO ===");
+            System.out.println("+------------+------------+--------------------+------------+");
+            System.out.println("| Nome       | Tipo       | Valor              | Funcao     |");
+            System.out.println("+------------+------------+--------------------+------------+");
+            
+            for (Map.Entry<String, SemanticAnalyzer.Symbol> entry : symbolTable.entrySet()) {
+                SemanticAnalyzer.Symbol symbol = entry.getValue();
+                String type = symbol.type + (symbol.isArray ? "[]" : "");
+                String value = symbol.value != null ? symbol.value : "nao inicializado";
+                String isFunction = symbol.isFunction ? "Sim" : "Nao";
+                
+                System.out.printf("| %-10s | %-10s | %-18s | %-10s |\n",
+                    truncateString(entry.getKey(), 10),
+                    truncateString(type, 10),
+                    truncateString(value, 18),
+                    truncateString(isFunction, 10));
+            }
+            
+            System.out.println("+------------+------------+--------------------+------------+");
+            
+            // Gerar codigo intermediário
             MOCTACVisitor tacVisitor = new MOCTACVisitor();
+            tacVisitor.setSymbolTable(symbolTable);
             tacVisitor.visit(tree);
             
-            // Obter o código gerado
+            // Obter o codigo gerado
             TACGenerator generator = tacVisitor.getGenerator();
             
-            // Imprimir o código gerado
-            System.out.println("\n=== CÓDIGO TAC GERADO ===");
+            // Imprimir o codigo gerado
+            System.out.println("\n=== CoDIGO TAC GERADO ===");
             for (TACInstruction instruction : generator.getInstructions()) {
                 System.out.println(instruction);
             }
@@ -86,5 +113,12 @@ public class Main {
             System.err.println("\n=== ERRO DE I/O ===");
             System.err.println("Erro ao ler o arquivo: " + e.getMessage());
         }
+    }
+
+    // Método auxiliar para truncar strings mantendo caracteres especiais
+    private static String truncateString(String str, int maxLength) {
+        if (str == null) return "";
+        if (str.length() <= maxLength) return str;
+        return str.substring(0, maxLength - 3) + "...";
     }
 }

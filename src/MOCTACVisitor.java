@@ -2,6 +2,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import java.util.Stack;
 import parser.MOCBaseVisitor;
 import parser.MOCParser;
+import java.util.Map;
 
 public class MOCTACVisitor extends MOCBaseVisitor<String> {
     private TACGenerator generator;
@@ -10,6 +11,31 @@ public class MOCTACVisitor extends MOCBaseVisitor<String> {
     public MOCTACVisitor() {
         this.generator = new TACGenerator();
         this.valueStack = new Stack<>();
+    }
+
+    public void setSymbolTable(Map<String, SemanticAnalyzer.Symbol> symbolTable) {
+        for (Map.Entry<String, SemanticAnalyzer.Symbol> entry : symbolTable.entrySet()) {
+            SemanticAnalyzer.Symbol symbol = entry.getValue();
+            if (!symbol.isFunction) {
+                String type = symbol.type;
+                if (symbol.isArray) {
+                    type = type + "[]";
+                }
+                
+                // Adiciona a variável à tabela de símbolos
+                generator.addSymbol(entry.getKey(), type);
+                
+                // Se a variável tem um valor inicial, adiciona uma instrução de atribuição
+                if (symbol.value != null) {
+                    generator.addInstruction(new TACInstruction(
+                        TACInstruction.OpType.ASSIGN,
+                        entry.getKey(),
+                        symbol.value,
+                        null
+                    ));
+                }
+            }
+        }
     }
 
     @Override

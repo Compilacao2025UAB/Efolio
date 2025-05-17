@@ -18,6 +18,26 @@ public interface MOCListener extends ParseTreeListener {
 	 */
 	void exitProgram(MOCParser.ProgramContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link MOCParser#localFuncDecl}.
+	 * @param ctx the parse tree
+	 */
+	void enterLocalFuncDecl(MOCParser.LocalFuncDeclContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MOCParser#localFuncDecl}.
+	 * @param ctx the parse tree
+	 */
+	void exitLocalFuncDecl(MOCParser.LocalFuncDeclContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MOCParser#localFuncDef}.
+	 * @param ctx the parse tree
+	 */
+	void enterLocalFuncDef(MOCParser.LocalFuncDefContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MOCParser#localFuncDef}.
+	 * @param ctx the parse tree
+	 */
+	void exitLocalFuncDef(MOCParser.LocalFuncDefContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link MOCParser#statement}.
 	 * @param ctx the parse tree
 	 */

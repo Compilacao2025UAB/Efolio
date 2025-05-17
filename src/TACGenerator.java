@@ -41,7 +41,7 @@ public class TACGenerator {
     }
 
     public void optimize() {
-        // Eliminação de código morto
+        // Eliminação de codigo morto
         boolean changed;
         do {
             changed = false;
@@ -100,12 +100,55 @@ public class TACGenerator {
         } while (changed);
     }
 
+    public String getSymbolTableString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n=== TABELA DE SÍMBOLOS ===\n");
+        sb.append("┌────────────┬────────────┬────────────┐\n");
+        sb.append("│ Nome       │ Tipo       │ Valor      │\n");
+        sb.append("├────────────┼────────────┼────────────┤\n");
+        
+        for (Map.Entry<String, String> entry : symbolTable.entrySet()) {
+            String name = entry.getKey();
+            String type = entry.getValue();
+            String value = "não inicializado";
+            
+            // Procura o valor nas instruções TAC
+            for (TACInstruction inst : instructions) {
+                if (inst.getOp() == TACInstruction.OpType.ASSIGN && 
+                    inst.getResult().equals(name)) {
+                    value = inst.getArg1();
+                    break;
+                }
+            }
+            
+            // Formata cada linha da tabela
+            sb.append(String.format("│ %-10s │ %-10s │ %-10s │\n", 
+                name, type, value));
+        }
+        
+        sb.append("└────────────┴────────────┴────────────┘\n");
+        return sb.toString();
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
+        sb.append("\n=== CoDIGO TAC ===\n");
+        sb.append("┌────┬────────────┬────────────┬────────────┬────────────┐\n");
+        sb.append("│ #  │ Operação   │ Resultado  │ Arg1       │ Arg2       │\n");
+        sb.append("├────┼────────────┼────────────┼────────────┼────────────┤\n");
+        
+        int i = 1;
         for (TACInstruction inst : instructions) {
-            sb.append(inst.toString()).append("\n");
+            sb.append(String.format("│ %-2d │ %-10s │ %-10s │ %-10s │ %-10s │\n",
+                i++,
+                inst.getOp(),
+                inst.getResult() != null ? inst.getResult() : "",
+                inst.getArg1() != null ? inst.getArg1() : "",
+                inst.getArg2() != null ? inst.getArg2() : ""));
         }
+        
+        sb.append("└────┴────────────┴────────────┴────────────┴────────────┘\n");
         return sb.toString();
     }
 } 

@@ -128,15 +128,7 @@ statement
     | returnStatement
     | blockStatement
     | expression SEMICOLON
-<<<<<<< HEAD
-    // adiciona a chamada de funçoes
-=======
-
->>>>>>> f6eb9c17de09edadd238bb75b5127cbb029b2153
     ;
-
-
-
 
 // Block statement permite a criaçao de blocos, { ( x= 4) }  por exemplo
 blockStatement

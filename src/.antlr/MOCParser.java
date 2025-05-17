@@ -1,5 +1,4 @@
-// Generated from d:/_UAb/Ano_3/2Sem/21018 - Compilação/2104775_EfolioB/Efolio/src/MOC.g4 by ANTLR 4.13.2
-package parser;
+// Generated from d:/_UAb/Ano_3/2Sem/21018 - Compilação/2104775_EfolioB/Efolio/src/MOC.g4 by ANTLR 4.13.1
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -9,9 +8,9 @@ import java.util.List;
 import java.util.Iterator;
 import java.util.ArrayList;
 
-@SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast", "CheckReturnValue", "this-escape"})
+@SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast", "CheckReturnValue"})
 public class MOCParser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.13.2", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.13.1", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -147,19 +146,6 @@ public class MOCParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_program; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).enterProgram(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).exitProgram(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MOCVisitor ) return ((MOCVisitor<? extends T>)visitor).visitProgram(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final ProgramContext program() throws RecognitionException {
@@ -232,19 +218,6 @@ public class MOCParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_localFuncDecl; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).enterLocalFuncDecl(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).exitLocalFuncDecl(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MOCVisitor ) return ((MOCVisitor<? extends T>)visitor).visitLocalFuncDecl(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final LocalFuncDeclContext localFuncDecl() throws RecognitionException {
@@ -305,19 +278,6 @@ public class MOCParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_localFuncDef; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).enterLocalFuncDef(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).exitLocalFuncDef(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MOCVisitor ) return ((MOCVisitor<? extends T>)visitor).visitLocalFuncDef(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final LocalFuncDefContext localFuncDef() throws RecognitionException {
@@ -400,19 +360,6 @@ public class MOCParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_statement; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).enterStatement(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).exitStatement(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MOCVisitor ) return ((MOCVisitor<? extends T>)visitor).visitStatement(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final StatementContext statement() throws RecognitionException {
@@ -528,19 +475,6 @@ public class MOCParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_blockStatement; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).enterBlockStatement(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).exitBlockStatement(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MOCVisitor ) return ((MOCVisitor<? extends T>)visitor).visitBlockStatement(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final BlockStatementContext blockStatement() throws RecognitionException {
@@ -592,19 +526,6 @@ public class MOCParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_returnStatement; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).enterReturnStatement(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).exitReturnStatement(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MOCVisitor ) return ((MOCVisitor<? extends T>)visitor).visitReturnStatement(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final ReturnStatementContext returnStatement() throws RecognitionException {
@@ -645,19 +566,6 @@ public class MOCParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_readStatement; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).enterReadStatement(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).exitReadStatement(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MOCVisitor ) return ((MOCVisitor<? extends T>)visitor).visitReadStatement(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final ReadStatementContext readStatement() throws RecognitionException {
@@ -744,19 +652,6 @@ public class MOCParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_writeStatement; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).enterWriteStatement(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).exitWriteStatement(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MOCVisitor ) return ((MOCVisitor<? extends T>)visitor).visitWriteStatement(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final WriteStatementContext writeStatement() throws RecognitionException {
@@ -880,19 +775,6 @@ public class MOCParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_assignment; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).enterAssignment(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).exitAssignment(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MOCVisitor ) return ((MOCVisitor<? extends T>)visitor).visitAssignment(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final AssignmentContext assignment() throws RecognitionException {
@@ -934,19 +816,6 @@ public class MOCParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_assignable; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).enterAssignable(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).exitAssignable(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MOCVisitor ) return ((MOCVisitor<? extends T>)visitor).visitAssignable(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final AssignableContext assignable() throws RecognitionException {
@@ -998,19 +867,6 @@ public class MOCParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_expression; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).enterExpression(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).exitExpression(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MOCVisitor ) return ((MOCVisitor<? extends T>)visitor).visitExpression(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final ExpressionContext expression() throws RecognitionException {
@@ -1048,19 +904,6 @@ public class MOCParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_assExpr; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).enterAssExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).exitAssExpr(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MOCVisitor ) return ((MOCVisitor<? extends T>)visitor).visitAssExpr(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final AssExprContext assExpr() throws RecognitionException {
@@ -1117,19 +960,6 @@ public class MOCParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_orExpr; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).enterOrExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).exitOrExpr(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MOCVisitor ) return ((MOCVisitor<? extends T>)visitor).visitOrExpr(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final OrExprContext orExpr() throws RecognitionException {
@@ -1186,19 +1016,6 @@ public class MOCParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_andExpr; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).enterAndExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).exitAndExpr(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MOCVisitor ) return ((MOCVisitor<? extends T>)visitor).visitAndExpr(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final AndExprContext andExpr() throws RecognitionException {
@@ -1275,19 +1092,6 @@ public class MOCParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_relExpr; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).enterRelExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).exitRelExpr(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MOCVisitor ) return ((MOCVisitor<? extends T>)visitor).visitRelExpr(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final RelExprContext relExpr() throws RecognitionException {
@@ -1356,19 +1160,6 @@ public class MOCParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_addExpr; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).enterAddExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).exitAddExpr(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MOCVisitor ) return ((MOCVisitor<? extends T>)visitor).visitAddExpr(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final AddExprContext addExpr() throws RecognitionException {
@@ -1437,19 +1228,6 @@ public class MOCParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_mulExpr; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).enterMulExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).exitMulExpr(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MOCVisitor ) return ((MOCVisitor<? extends T>)visitor).visitMulExpr(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final MulExprContext mulExpr() throws RecognitionException {
@@ -1515,19 +1293,6 @@ public class MOCParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_unaryExpr; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).enterUnaryExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).exitUnaryExpr(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MOCVisitor ) return ((MOCVisitor<? extends T>)visitor).visitUnaryExpr(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final UnaryExprContext unaryExpr() throws RecognitionException {
@@ -1596,19 +1361,6 @@ public class MOCParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_castExpr; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).enterCastExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).exitCastExpr(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MOCVisitor ) return ((MOCVisitor<? extends T>)visitor).visitCastExpr(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final CastExprContext castExpr() throws RecognitionException {
@@ -1666,19 +1418,6 @@ public class MOCParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_primeExpr; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).enterPrimeExpr(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).exitPrimeExpr(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MOCVisitor ) return ((MOCVisitor<? extends T>)visitor).visitPrimeExpr(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final PrimeExprContext primeExpr() throws RecognitionException {
@@ -1797,19 +1536,6 @@ public class MOCParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_intLiteral; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).enterIntLiteral(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).exitIntLiteral(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MOCVisitor ) return ((MOCVisitor<? extends T>)visitor).visitIntLiteral(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final IntLiteralContext intLiteral() throws RecognitionException {
@@ -1840,19 +1566,6 @@ public class MOCParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_doubleLiteral; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).enterDoubleLiteral(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).exitDoubleLiteral(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MOCVisitor ) return ((MOCVisitor<? extends T>)visitor).visitDoubleLiteral(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final DoubleLiteralContext doubleLiteral() throws RecognitionException {
@@ -1892,19 +1605,6 @@ public class MOCParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_expressionList; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).enterExpressionList(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).exitExpressionList(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MOCVisitor ) return ((MOCVisitor<? extends T>)visitor).visitExpressionList(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final ExpressionListContext expressionList() throws RecognitionException {
@@ -1961,19 +1661,6 @@ public class MOCParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_funcDeclaration; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).enterFuncDeclaration(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).exitFuncDeclaration(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MOCVisitor ) return ((MOCVisitor<? extends T>)visitor).visitFuncDeclaration(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final FuncDeclarationContext funcDeclaration() throws RecognitionException {
@@ -2034,19 +1721,6 @@ public class MOCParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_funcDefinition; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).enterFuncDefinition(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).exitFuncDefinition(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MOCVisitor ) return ((MOCVisitor<? extends T>)visitor).visitFuncDefinition(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final FuncDefinitionContext funcDefinition() throws RecognitionException {
@@ -2098,19 +1772,6 @@ public class MOCParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_readFunc; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).enterReadFunc(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).exitReadFunc(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MOCVisitor ) return ((MOCVisitor<? extends T>)visitor).visitReadFunc(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final ReadFuncContext readFunc() throws RecognitionException {
@@ -2159,19 +1820,6 @@ public class MOCParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_parameterList; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).enterParameterList(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).exitParameterList(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MOCVisitor ) return ((MOCVisitor<? extends T>)visitor).visitParameterList(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final ParameterListContext parameterList() throws RecognitionException {
@@ -2224,19 +1872,6 @@ public class MOCParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_parameter; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).enterParameter(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).exitParameter(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MOCVisitor ) return ((MOCVisitor<? extends T>)visitor).visitParameter(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final ParameterContext parameter() throws RecognitionException {
@@ -2300,19 +1935,6 @@ public class MOCParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_funcType; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).enterFuncType(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).exitFuncType(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MOCVisitor ) return ((MOCVisitor<? extends T>)visitor).visitFuncType(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final FuncTypeContext funcType() throws RecognitionException {
@@ -2372,19 +1994,6 @@ public class MOCParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_declaration; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).enterDeclaration(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).exitDeclaration(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MOCVisitor ) return ((MOCVisitor<? extends T>)visitor).visitDeclaration(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final DeclarationContext declaration() throws RecognitionException {
@@ -2445,19 +2054,6 @@ public class MOCParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_variableInit; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).enterVariableInit(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).exitVariableInit(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MOCVisitor ) return ((MOCVisitor<? extends T>)visitor).visitVariableInit(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final VariableInitContext variableInit() throws RecognitionException {
@@ -2544,19 +2140,6 @@ public class MOCParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_arrayLiteral; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).enterArrayLiteral(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).exitArrayLiteral(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MOCVisitor ) return ((MOCVisitor<? extends T>)visitor).visitArrayLiteral(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final ArrayLiteralContext arrayLiteral() throws RecognitionException {
@@ -2594,19 +2177,6 @@ public class MOCParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_varType; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).enterVarType(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).exitVarType(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MOCVisitor ) return ((MOCVisitor<? extends T>)visitor).visitVarType(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final VarTypeContext varType() throws RecognitionException {
@@ -2693,19 +2263,6 @@ public class MOCParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_loop; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).enterLoop(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).exitLoop(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MOCVisitor ) return ((MOCVisitor<? extends T>)visitor).visitLoop(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final LoopContext loop() throws RecognitionException {
@@ -2787,19 +2344,6 @@ public class MOCParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_conditional; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).enterConditional(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MOCListener ) ((MOCListener)listener).exitConditional(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MOCVisitor ) return ((MOCVisitor<? extends T>)visitor).visitConditional(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final ConditionalContext conditional() throws RecognitionException {

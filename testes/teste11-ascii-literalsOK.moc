@@ -1,11 +1,11 @@
 // Teste de conversao de literais para ASCII
 int a = 'A';           // Deve ser convertido para 65
-int b = 'z';           // Deve ser convertido para 122
+int b = 'z';          // Deve ser convertido para 122
 int arr[] = "MOC";    // Deve ser convertido para {77, 79, 67}
-int arr2[] = "áéí";    // Deve ser convertido para {97, 101, 105}
-write("Compilacao");   // Deve ser convertido para write({67, 111, 109, 112, 105, 108, 97, 99, 97, 111})
-write('B');             // Deve ser convertido para write(66) 
-
+int arr2[] = "áéí";   // Deve ser convertido para {97, 101, 105}
+writes("Compilacao");   
+writec(arr);       
+write (a);
 int main() {
     // Codigo de teste aqui
     return 0;

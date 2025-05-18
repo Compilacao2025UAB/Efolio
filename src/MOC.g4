@@ -62,6 +62,9 @@ DOUBLE_LITERAL : [0-9]+ DOT [0-9]+ | DOT [0-9]+ ;
 // Para int escolhemos nao permitir numeros comecados por 0 alem de 0 em si
 INT_LITERAL    : '0' | [1-9][0-9]*;
 
+// Literal de caractere
+CHAR_LITERAL   : '\'' (~['\\\r\n] | STR_ESCAPE) '\'' ;
+
 // String literal atualizado para aceitar caracteres especiais
 STRING_LITERAL : '"' (STR_ESCAPE | ~["\\\r\n])* '"' ;
 
@@ -214,6 +217,8 @@ primeExpr
     | IDENTIFIER
     | intLiteral
     | doubleLiteral
+    | charLiteral
+    | stringLiteral
     | LEFTPARENTESIS expression RIGHTPARENTESIS
     | LEFTBRACE expressionList RIGHTBRACE
     ;
@@ -225,6 +230,14 @@ intLiteral
 
 doubleLiteral
     : DOUBLE_LITERAL
+    ;
+
+charLiteral
+    : CHAR_LITERAL
+    ;
+
+stringLiteral
+    : STRING_LITERAL
     ;
 
 // Lista de expressoes separadas por virgula

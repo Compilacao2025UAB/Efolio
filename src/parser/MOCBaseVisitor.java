@@ -172,6 +172,20 @@ public class MOCBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements MO
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitCharLiteral(MOCParser.CharLiteralContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitStringLiteral(MOCParser.StringLiteralContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitExpressionList(MOCParser.ExpressionListContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}

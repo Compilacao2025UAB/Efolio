@@ -143,6 +143,18 @@ public interface MOCVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitDoubleLiteral(MOCParser.DoubleLiteralContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link MOCParser#charLiteral}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCharLiteral(MOCParser.CharLiteralContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MOCParser#stringLiteral}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStringLiteral(MOCParser.StringLiteralContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link MOCParser#expressionList}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

@@ -730,7 +730,7 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
      */
     @Override
     public String visitLoop(MOCParser.LoopContext ctx) {
-        String condType = visit(ctx.expression());
+        String condType = visit(ctx.expression().get(0));
         if (!condType.equals("int")) {
             addError(ctx, "Erro: Condição do loop deve ser inteira");
         }

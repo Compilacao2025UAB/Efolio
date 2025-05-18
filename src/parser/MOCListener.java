@@ -228,6 +228,26 @@ public interface MOCListener extends ParseTreeListener {
 	 */
 	void exitDoubleLiteral(MOCParser.DoubleLiteralContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link MOCParser#charLiteral}.
+	 * @param ctx the parse tree
+	 */
+	void enterCharLiteral(MOCParser.CharLiteralContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MOCParser#charLiteral}.
+	 * @param ctx the parse tree
+	 */
+	void exitCharLiteral(MOCParser.CharLiteralContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MOCParser#stringLiteral}.
+	 * @param ctx the parse tree
+	 */
+	void enterStringLiteral(MOCParser.StringLiteralContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MOCParser#stringLiteral}.
+	 * @param ctx the parse tree
+	 */
+	void exitStringLiteral(MOCParser.StringLiteralContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link MOCParser#expressionList}.
 	 * @param ctx the parse tree
 	 */

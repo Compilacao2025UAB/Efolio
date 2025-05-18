@@ -63,6 +63,46 @@ public class MOCTACVisitor extends MOCBaseVisitor<String> {
     public String visitAssignment(MOCParser.AssignmentContext ctx) {
         String value = visit(ctx.expression());
         String target = ctx.assignable().getText();
+        
+        // Converte para ASCII apenas se for uma atribuição
+        if (value != null) {
+            if (value.startsWith("'") && value.endsWith("'")) {
+                // Converte caractere para ASCII
+                char c = value.charAt(1);
+                int ascii = (int)c;
+                value = String.valueOf(ascii);
+            } else if (value.startsWith("\"") && value.endsWith("\"")) {
+                // Converte string para array de ASCII
+                String str = value.substring(1, value.length() - 1);
+                String tempArray = generator.newTemp();
+                
+                // Cria o array com o tamanho da string
+                generator.addInstruction(new TACInstruction(
+                    TACInstruction.OpType.ASSIGN,
+                    tempArray,
+                    "new int[" + str.length() + "]",
+                    null
+                ));
+                
+                // Converte toda a string para ASCII de uma vez
+                StringBuilder asciiValues = new StringBuilder();
+                for (int i = 0; i < str.length(); i++) {
+                    if (i > 0) asciiValues.append(",");
+                    asciiValues.append((int)str.charAt(i));
+                }
+                
+                // Atribui todos os valores ASCII de uma vez
+                generator.addInstruction(new TACInstruction(
+                    TACInstruction.OpType.ASSIGN,
+                    tempArray,
+                    "[" + asciiValues.toString() + "]",
+                    null
+                ));
+                
+                value = tempArray;
+            }
+        }
+        
         generator.addInstruction(new TACInstruction(
             TACInstruction.OpType.ASSIGN,
             target,
@@ -271,9 +311,15 @@ public class MOCTACVisitor extends MOCBaseVisitor<String> {
             return ctx.intLiteral().getText();
         } else if (ctx.doubleLiteral() != null) {
             return ctx.doubleLiteral().getText();
-        } else if (ctx.getChild(0).getText().startsWith("\"") && ctx.getChild(0).getText().endsWith("\"")) {
-            String str = ctx.getChild(0).getText();
-            return str.substring(1, str.length() - 1);
+        } else if (ctx.charLiteral() != null) {
+            // Converte o caractere para ASCII imediatamente
+            String charLiteral = ctx.charLiteral().getText();
+            char c = charLiteral.charAt(1); // Remove as aspas
+            int ascii = (int)c;
+            return String.valueOf(ascii);
+        } else if (ctx.stringLiteral() != null) {
+            // Mantém a string literal para ser convertida na atribuição se necessário
+            return ctx.stringLiteral().getText();
         } else if (ctx.IDENTIFIER() != null) {
             if (ctx.LEFTBRACKET() != null) {
                 // Array access
@@ -327,15 +373,16 @@ public class MOCTACVisitor extends MOCBaseVisitor<String> {
             if (ctx.expression() != null) {
                 String value = visit(ctx.expression());
                 generator.addInstruction(new TACInstruction(
-                    TACInstruction.OpType.WRITE,
+                    TACInstruction.OpType.WRITES,
                     null,
                     value,
                     null
                 ));
             } else if (ctx.STRING_LITERAL() != null) {
+                // Para strings literais em writes, mantém a string original
                 String value = ctx.STRING_LITERAL().getText();
                 generator.addInstruction(new TACInstruction(
-                    TACInstruction.OpType.WRITE,
+                    TACInstruction.OpType.WRITES,
                     null,
                     value,
                     null

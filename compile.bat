@@ -7,6 +7,13 @@ set "LIB_DIR=%CURRENT_DIR%src\lib"
 set "SRC_DIR=%CURRENT_DIR%src"
 set "OUT_DIR=%CURRENT_DIR%out"
 
+REM Se não for fornecido um ficheiro, usa o teste11-ascii-literalsOK.moc
+if "%1"=="" (
+    set "TEST_FILE=testes\teste12-teste2OK.moc"
+) else (
+    set "TEST_FILE=%1"
+)
+
 REM Check if ANTLR JAR exists
 if not exist "%LIB_DIR%\antlr-4.13.2-complete.jar" (
     echo ERRO: ANTLR JAR nao encontrado em %LIB_DIR%\antlr-4.13.2-complete.jar
@@ -46,7 +53,7 @@ if %errorlevel% neq 0 (
 )
 
 echo Compilando ficheiros restantes...
-javac -Xlint:unchecked -cp "%LIB_DIR%\antlr-4.13.2-complete.jar;%OUT_DIR%" -d "%OUT_DIR%" "%SRC_DIR%\Main.java" "%SRC_DIR%\SemanticAnalyzer.java" "%SRC_DIR%\MOCTACVisitor.java" "%SRC_DIR%\TACGenerator.java" "%SRC_DIR%\TACInstruction.java" "%SRC_DIR%\MOCSemanticVisitor.java"
+javac -Xlint:unchecked -cp "%LIB_DIR%\antlr-4.13.2-complete.jar;%OUT_DIR%" -d "%OUT_DIR%" "%SRC_DIR%\Main.java" "%SRC_DIR%\SemanticAnalyzer.java" "%SRC_DIR%\MOCTACVisitor.java" "%SRC_DIR%\TACGenerator.java" "%SRC_DIR%\TACInstruction.java" "%SRC_DIR%\MOCSemanticVisitor.java" "%SRC_DIR%\Preprocessor.java"
 
 if %errorlevel% neq 0 (
     echo ERRO ao compilar ficheiros restantes.
@@ -57,11 +64,22 @@ if %errorlevel% neq 0 (
 echo Compilacao concluida com sucesso.
 
 echo.
+echo Executando pré-processador...
+echo.
+
+REM Executar o pré-processador
+java -cp "%OUT_DIR%" Preprocessor "%TEST_FILE%" "%TEST_FILE%.preprocessed"
+
+echo.
 echo Executando programa...
 echo.
 
-REM Run the program with teste1.moc
-java -Dfile.encoding=UTF-8 -cp "%OUT_DIR%;%LIB_DIR%\antlr-4.13.2-complete.jar" Main testes\teste2.moc
+REM Run the program with the preprocessed file
+java -Dfile.encoding=UTF-8 -cp "%OUT_DIR%;%LIB_DIR%\antlr-4.13.2-complete.jar" Main "%TEST_FILE%.preprocessed"
+
+REM Limpar o ficheiro pré-processado
+del "%TEST_FILE%.preprocessed"
+
 echo.
 pause
 

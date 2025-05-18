@@ -223,27 +223,43 @@ public class TACGenerator {
 
         // Código TAC Otimizado com liveness analysis
         List<TACInstruction> optimizedInstructions = new ArrayList<>();
+        // Conjunto que mantém o controle das variáveis que estão "vivas" em cada ponto do código
         Set<String> live = new HashSet<>();
-        // Percorrer de trás para a frente
+        
+        // Análise de liveness é feita de trás para frente (backward analysis)
+        // Isso porque precisamos saber quais variáveis serão usadas no futuro
         for (int idx = originalInstructions.size() - 1; idx >= 0; idx--) {
             TACInstruction inst = originalInstructions.get(idx);
-            String result = inst.getResult();
-            String arg1 = inst.getArg1();
-            String arg2 = inst.getArg2();
+            String result = inst.getResult();  // Variável que recebe o resultado da operação
+            String arg1 = inst.getArg1();      // Primeiro argumento da operação
+            String arg2 = inst.getArg2();      // Segundo argumento da operação (se houver)
+            
+            // Verifica se a instrução é uma atribuição (ASSIGN) ou uma operação aritmética
+            // Estas são as instruções que podem ser eliminadas se seus resultados não forem usados
             boolean isAssignment = inst.getOp() == TACInstruction.OpType.ASSIGN ||
                                    inst.getOp() == TACInstruction.OpType.ADD ||
                                    inst.getOp() == TACInstruction.OpType.SUB ||
                                    inst.getOp() == TACInstruction.OpType.MUL ||
                                    inst.getOp() == TACInstruction.OpType.DIV;
-            // Se a variável de resultado não está viva, pode eliminar
+            
+            // Se for uma atribuição e a variável de resultado não estiver viva,
+            // podemos eliminar esta instrução pois seu resultado não será usado
             if (isAssignment && result != null && !live.contains(result)) {
-                continue; // Elimina a instrução
+                continue; // Pula esta instrução (efetivamente a elimina)
             }
-            // Atualiza o conjunto de variáveis vivas
+            
+            // Atualiza o conjunto de variáveis vivas:
+            // 1. Remove a variável de resultado pois ela será definida por esta instrução
+            //    (não precisamos mais do valor antigo dela)
             if (result != null) live.remove(result);
+            
+            // 2. Adiciona os argumentos ao conjunto de variáveis vivas
+            //    pois eles serão usados nesta instrução
+            //    (não adiciona números literais pois não são variáveis)
             if (arg1 != null && !isNumber(arg1)) live.add(arg1);
             if (arg2 != null && !isNumber(arg2)) live.add(arg2);
-            // Adiciona a instrução à lista otimizada (no início)
+            
+            // Adiciona a instrução à lista otimizada (no início pois estamos percorrendo de trás para frente)
             optimizedInstructions.add(0, inst);
         }
         // Simplificação de expressões constantes (apenas para as que restaram)

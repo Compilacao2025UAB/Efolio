@@ -277,7 +277,7 @@ declaration
 
 variableInit
     : IDENTIFIER (ASSIGN expression)?
-    | IDENTIFIER LEFTBRACKET expression? RIGHTBRACKET (ASSIGN arrayLiteral)?
+    | IDENTIFIER LEFTBRACKET expression? RIGHTBRACKET (ASSIGN (arrayLiteral | expression))?
     ;
 
 // Literal de Arrays Define um array como uma lista de expressões entre chaves

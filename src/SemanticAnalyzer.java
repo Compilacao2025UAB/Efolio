@@ -823,7 +823,7 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
         // Converte o tipo da expressao usando o typeMap
         String mappedExprType = typeMap.getOrDefault(exprType, exprType);
 
-        // Verifica se e uma atribuicao a um elemento de array
+        // Verifica se se e uma atribuicao a um elemento de array
         if (ctx.assignable().LEFTBRACKET() != null) {
             if (!targetSymbol.isArray) {
                 addError(ctx, "Erro: '" + targetName + "' nao e um array");

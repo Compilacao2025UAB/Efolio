@@ -125,7 +125,7 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
     private void checkVariableInitialized(String varName, ParserRuleContext ctx) {
         Symbol symbol = symbolTable.get(varName);
         if (symbol != null && !symbol.isInitialized) {
-            addError(ctx, "Erro: Variável '" + varName + "' não inicializada");
+            addError(ctx, "Erro: Variavel '" + varName + "' nao inicializada");
         }
     }
 
@@ -209,7 +209,7 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
                                     (paramCount == 0 && isVoidParamList(existingParamTypes)) ||
                                     (existingParamTypes.size() == paramCount);
                     if (!paramsEquivalentes) {
-                        addError(ctx, "Erro: Numero de parâmetros incompativel com a declaracao da funcao '" + funcName + "'");
+                        addError(ctx, "Erro: Numero de parametros incompativel com a declaracao da funcao '" + funcName + "'");
                     } else if (ctx.parameterList() != null && !existingParamTypes.isEmpty()) {
                         for (int i = 0; i < existingParamTypes.size(); i++) {
                             String declared = existingParamTypes.get(i);
@@ -259,14 +259,14 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
                             (paramCount == 0 && isVoidParamList(existingParamTypes)) ||
                             (existingParamTypes.size() == paramCount);
             if (!paramsEquivalentes) {
-                addError(ctx, "Erro: Número de parâmetros incompatível com a declaracao da funcao '" + funcName + "'");
+                addError(ctx, "Erro: Numero de parametros incompativel com a declaracao da funcao '" + funcName + "'");
             } else if (ctx.parameterList() != null && !existingParamTypes.isEmpty()) {
                 for (int i = 0; i < existingParamTypes.size(); i++) {
                     String declared = existingParamTypes.get(i);
                     String here = ctx.parameterList().parameter(i).funcType().getText()
                             + (ctx.parameterList().parameter(i).LEFTBRACKET() != null ? "[]" : "");
                     if (!declared.equals(here)) {
-                        addError(ctx, "Erro: Tipo do parâmetro " + (i+1) + " incompatível com a declaracao de '" + funcName + "'");
+                        addError(ctx, "Erro: Tipo do parametro " + (i+1) + " incompativel com a declaracao de '" + funcName + "'");
                     }
                 }
             }
@@ -385,7 +385,7 @@ public class SemanticAnalyzer extends MOCBaseVisitor<String> {
                      for (String type : elementTypes) {
                          String mappedType = typeMap.getOrDefault(type, type);
                          if (!mappedType.equals(varType)) {
-                             addError(ctx, "Erro: Elementos do array têm tipos inconsistentes");
+                             addError(ctx, "Erro: Elementos do array tem tipos inconsistentes");
                          }
                      }
                      varSymbol.isInitialized = true;

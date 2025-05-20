@@ -1,0 +1,22 @@
+int main()
+    {
+        int x = 5;
+        int y = 6;
+        int z = x + y * 2;
+    
+        if (z > 20)
+            {
+                write(z);
+            }
+        else
+            {
+                write(x + y);
+            }
+    
+        while (x < 10)
+            {
+                x = x + 1;
+                write(x);
+            }
+        return 0;
+    }

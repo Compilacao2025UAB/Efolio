@@ -1,0 +1,24 @@
+int main()
+    {
+        int x = 5;
+        int y = 10;
+        int z = 15;  // Variável declarada mas nunca usada
+    
+        x = 20;      // Atribuicao que será sobrescrita
+        x = 30;      // Esta é a atribuicao que realmente importa
+    
+        if (x > y)
+            {
+                int temp = 100;  // Variável local nunca usada
+                y = x;
+            }
+        else
+            {
+                x = y;
+            }
+
+        int resultado = x + y;  // Resultado calculado mas nunca usado
+    
+        write(x);    // Apenas x é realmente usado no final
+        return 0;
+    }

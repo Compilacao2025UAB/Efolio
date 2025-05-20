@@ -1,0 +1,57 @@
+/* Demonstracao completa das funcionalidades MOCC */
+
+int fact(int);          // Fatorial recursivo
+double avg(double[], int); // Média de valores
+void processarTexto(int[]); // Processar string como vetor de inteiros
+void main(void);        // Funcao principal
+
+
+/* Funcao para calcular o fatorial de um número (versao recursiva) */
+int fact(int k)
+    {
+        if (k <= 1)
+            {
+                return 1;
+            }
+        else
+            {
+                return k * fact(k - 1); // nao esta a reconhecer o resultado como um 'int'
+            }
+    }
+
+/* Funcao para calcular a média de valores positivos */
+double avg(double v[], int tamanho)
+    {
+        int i;
+        double soma = 0.0;
+        for (i = 0; i < tamanho; i = i + 1)
+            {
+                soma = soma + v[i];
+            }
+        return soma / tamanho;
+    }
+
+/* Funcao para processar texto armazenado como vetor de inteiros */
+void processarTexto(int texto[])
+    {
+        int i = 0;
+            while (texto[i] != 0)
+                { // Processa até encontrar o terminador
+                    writec(texto[i]);   // Escreve cada caráter correspondente ao codigo ASCII
+                    i = i + 1;
+                }
+            writes(""); // Nova linha
+    }
+
+void main()
+    {
+        int texto[6] = {72, 101, 108, 108, 111, 0}; // "Hello" em ASCII
+        int n = 5;
+        double valores[5] = {1.0, 2.0, 3.0, 4.0, 5.0};
+        int resultado = fact(n);
+        double media = avg(valores, 5 ); // erro
+        processarTexto(texto);
+        write(resultado);
+        write(media);
+        //return 0;
+    }
